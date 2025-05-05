@@ -12,18 +12,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 @RestController
 @RequestMapping("/api/v1")
 public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private SecurityUtil securityUtil;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
+                          SecurityUtil securityUtil) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.securityUtil = securityUtil;
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<LoginRequest> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -31,6 +35,8 @@ public class AuthController {
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginRequest);
+        String accessToken = this.securityUtil.createToken(authentication);
+
+        return ResponseEntity.status(HttpStatus.OK).body(accessToken);
     }
 }
