@@ -92,10 +92,10 @@ public class SecurityConfiguration {
                     o.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPointCustom)
             )
-//            .exceptionHandling(e ->
-//                    e.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-//                            .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
-//            )
+            .exceptionHandling(e ->
+                    e.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                            .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+            )
             .formLogin(f -> f.disable())
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

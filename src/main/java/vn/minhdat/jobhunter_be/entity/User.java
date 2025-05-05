@@ -12,39 +12,38 @@ import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Table(name = "users")
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class User {
+public abstract class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    protected long userId;
     @Embedded
-    private Address address;
+    protected Address address;
     @Embedded
     @Valid
     @NotNull(message = "Contact is not empty")
-    private Contact contact;
-    private LocalDate dob;
-    private String fullName;
+    protected Contact contact;
+    protected LocalDate dob;
+    protected String fullName;
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    protected Gender gender;
     @NotBlank(message = "Password is not empty")
-    private String password;
+    protected String password;
     @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    protected String refreshToken;
     @NotBlank(message = "Username is not empty")
-    private String username;
+    protected String username;
 
-
-    private Instant createdAt;
-    private String createdBy;
-    private Instant updatedAt;
-    private String updatedBy;
+    protected Instant createdAt;
+    protected String createdBy;
+    protected Instant updatedAt;
+    protected String updatedBy;
 
     @PrePersist
     public void handleBeforeCreate(){
