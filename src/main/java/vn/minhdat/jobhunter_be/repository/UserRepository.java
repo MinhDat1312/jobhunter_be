@@ -6,4 +6,5 @@ import vn.minhdat.jobhunter_be.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    User findByContact_Email(String email);
 }

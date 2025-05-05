@@ -54,4 +54,8 @@ public class UserService {
     public ArrayList<User> handleGetAllUsers() {
         return (ArrayList<User>) this.userRepository.findAll();
     }
+
+    public User handleGetUserByEmail(String email) {
+        return this.userRepository.findByContact_Email(email);
+    }
 }
