@@ -83,6 +83,7 @@ public class SecurityConfiguration {
 
         http
             .csrf(c -> c.disable())
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests( request ->
                 request.requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated()
