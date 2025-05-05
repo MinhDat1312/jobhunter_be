@@ -16,6 +16,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
@@ -59,7 +63,20 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("minhdat");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                       AuthenticationEntryPointCustom authenticationEntryPointCustom) throws Exception {
         String[] whiteList = {
                 "/", "/api/v1/auth/login"
         };
@@ -70,7 +87,14 @@ public class SecurityConfiguration {
                 request.requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated()
             )
-            .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
+            .oauth2ResourceServer(o ->
+                    o.jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(authenticationEntryPointCustom)
+            )
+//            .exceptionHandling(e ->
+//                    e.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+//                            .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+//            )
             .formLogin(f -> f.disable())
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
