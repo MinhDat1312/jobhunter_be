@@ -3,6 +3,7 @@ package vn.minhdat.jobhunter_be.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
@@ -15,13 +16,18 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/v1")
 public class UserController {
     private UserService userService;
+    private PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        String hashPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashPassword);
+
         User newUser = this.userService.handleCreateUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }

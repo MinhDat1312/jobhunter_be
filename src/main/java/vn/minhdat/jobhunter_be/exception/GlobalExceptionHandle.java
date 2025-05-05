@@ -11,7 +11,7 @@ public class GlobalExceptionHandle {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestResponse<Object>> handleAllExceptions(Exception e){
-        RestResponse<Object> response = new RestResponse<>();
+        RestResponse<Object> response = new RestResponse<Object>();
         response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setMessage(e.getMessage());
         response.setError("Internal Server Error");

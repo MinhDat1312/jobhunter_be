@@ -4,7 +4,6 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
@@ -16,30 +15,33 @@ import vn.minhdat.jobhunter_be.dto.response.RestResponse;
 public class FormatResponse implements ResponseBodyAdvice<Object> {
 
     @Override
-    public boolean supports(MethodParameter returnType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(MethodParameter returnType, Class converterType) {
         return true;
     }
 
     @Override
     @Nullable
     public Object beforeBodyWrite(@Nullable Object body, MethodParameter returnType,
-              MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType,
+              MediaType selectedContentType, Class selectedConverterType,
               ServerHttpRequest request, ServerHttpResponse response) {
 
         HttpServletResponse httpResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int statusCode = httpResponse.getStatus();
 
-        RestResponse<Object> restResponse = new RestResponse<>();
+        RestResponse<Object> restResponse = new RestResponse<Object>();
         restResponse.setStatusCode(statusCode);
+
+        if(body instanceof String){
+            return body;
+        }
 
         if(statusCode >= 400){
             return body;
         } else {
             restResponse.setData(body);
             restResponse.setMessage("Success");
-
-            return restResponse;
         }
+
+        return restResponse;
     }
 }
