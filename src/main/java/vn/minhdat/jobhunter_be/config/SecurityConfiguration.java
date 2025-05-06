@@ -86,7 +86,7 @@ public class SecurityConfiguration {
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests( request ->
                 request.requestMatchers(whiteList).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
             )
             .oauth2ResourceServer(o ->
                     o.jwt(Customizer.withDefaults())

@@ -1,5 +1,6 @@
 package vn.minhdat.jobhunter_be.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +29,7 @@ public class GlobalExceptionHandle {
     }
 
     @ExceptionHandler(value = {
+            InvalidException.class,
             BadCredentialsException.class,
             UsernameNotFoundException.class
     })
@@ -44,13 +46,19 @@ public class GlobalExceptionHandle {
     ResponseEntity<RestResponse<Object>> validationError(MethodArgumentNotValidException e) {
         BindingResult result = e.getBindingResult();
         final List<FieldError> list = result.getFieldErrors();
-        List<String> messages = list.stream().map(l -> l.getDefaultMessage())
-                .collect(Collectors.toList());
-
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+
+        if (list.isEmpty()) {
+            res.setError("Validation failed");
+            res.setMessage("No valid fields found");
+            return ResponseEntity.badRequest().body(res);
+        }
+
+        List<String> messages = list.stream().map(l -> l.getDefaultMessage())
+                .collect(Collectors.toList());
         res.setError(e.getBody().getDetail());
-        res.setMessage(messages.size() > 1 ? messages : messages.get(0));
+        res.setMessage(messages.size() > 1 ? messages : messages.getFirst());
 
         return ResponseEntity.badRequest().body(res);
     }
