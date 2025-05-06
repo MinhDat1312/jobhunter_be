@@ -15,20 +15,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User handleGetUserById(long id) {
-        Optional<User> user = this.userRepository.findById(id);
-
-        if(user.isPresent()) {
-            return user.get();
-        }
-
-        return null;
-    }
-
-    public ArrayList<User> handleGetAllUsers() {
-        return (ArrayList<User>) this.userRepository.findAll();
-    }
-
     public User handleGetUserByEmail(String email) {
         return this.userRepository.findByContact_Email(email);
     }

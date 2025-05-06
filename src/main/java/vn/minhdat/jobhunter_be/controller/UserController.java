@@ -17,11 +17,9 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/v1")
 public class UserController {
     private UserService userService;
-    private PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
 }

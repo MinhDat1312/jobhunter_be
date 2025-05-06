@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/v1")
 public class RecruiterController {
     private final RecruiterService recruiterService;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public RecruiterController(RecruiterService recruiterService, PasswordEncoder passwordEncoder) {
         this.recruiterService = recruiterService;
@@ -39,9 +39,13 @@ public class RecruiterController {
     }
 
     @PutMapping("/recruiters")
-    public ResponseEntity<Recruiter> updateRecruiter(@Valid @RequestBody Recruiter recruiter) {
+    public ResponseEntity<Recruiter> updateRecruiter(@Valid @RequestBody Recruiter recruiter) throws InvalidException {
         Recruiter newRecruiter = this.recruiterService.handleUpdateRecruiter(recruiter);
-        return ResponseEntity.status(HttpStatus.OK).body(newRecruiter);
+        if(newRecruiter != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(newRecruiter);
+        } else {
+            throw new InvalidException("Recruiter not found");
+        }
     }
 
     @GetMapping("/recruiters/{id}")
