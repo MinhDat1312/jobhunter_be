@@ -6,6 +6,7 @@ import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.util.annotation.RequireAddressIfRecruiter;
 
 public class RequireAddressIfRecruiterValidator implements ConstraintValidator<RequireAddressIfRecruiter, Object> {
+
     public RequireAddressIfRecruiterValidator() {
     }
 
