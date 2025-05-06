@@ -13,7 +13,7 @@ import vn.minhdat.jobhunter_be.common.Level;
 @AllArgsConstructor
 @ToString
 public class Applicant extends User{
-    private boolean availableStatus;
+    private boolean availableStatus = true;
     @Enumerated(EnumType.STRING)
     private Education education;
     @Enumerated(EnumType.STRING)
