@@ -15,32 +15,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User handleCreateUser(User user) {
-        return this.userRepository.save(user);
-    }
-
-    public void handleDeleteUser(long id) {
-        this.userRepository.deleteById(id);
-    }
-
-    public User handleUpdateUser(User updateUser) {
-        User currentUser = this.handleGetUserById(updateUser.getUserId());
-
-        if(currentUser != null) {
-            currentUser.setAddress(updateUser.getAddress());
-            currentUser.setContact(updateUser.getContact());
-            currentUser.setDob(updateUser.getDob());
-            currentUser.setFullName(updateUser.getFullName());
-            currentUser.setGender(updateUser.getGender());
-            currentUser.setPassword(updateUser.getPassword());
-            currentUser.setUsername(updateUser.getUsername());
-
-            return this.userRepository.save(currentUser);
-        }
-
-        return null;
-    }
-
     public User handleGetUserById(long id) {
         Optional<User> user = this.userRepository.findById(id);
 
