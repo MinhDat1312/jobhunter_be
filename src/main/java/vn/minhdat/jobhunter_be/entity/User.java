@@ -1,5 +1,7 @@
 package vn.minhdat.jobhunter_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +10,7 @@ import lombok.*;
 import vn.minhdat.jobhunter_be.common.Gender;
 import vn.minhdat.jobhunter_be.entity.embeddable.Address;
 import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
+import vn.minhdat.jobhunter_be.util.annotation.RequireAddressIfRecruiter;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -19,6 +22,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@RequireAddressIfRecruiter
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Recruiter.class, name = "recruiter"),
+        @JsonSubTypes.Type(value = Applicant.class, name = "applicant")
+})
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
