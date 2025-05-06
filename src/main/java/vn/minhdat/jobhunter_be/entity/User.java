@@ -10,6 +10,7 @@ import lombok.*;
 import vn.minhdat.jobhunter_be.common.Gender;
 import vn.minhdat.jobhunter_be.entity.embeddable.Address;
 import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 import vn.minhdat.jobhunter_be.util.annotation.RequireAddressIfRecruiter;
 
 import java.time.Instant;
@@ -62,9 +63,15 @@ public abstract class User {
     @PrePersist
     public void handleBeforeCreate(){
         this.createdAt = Instant.now();
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
     }
     @PreUpdate
     public void handleBeforeUpdate(){
         this.updatedAt = Instant.now();
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
     }
 }
