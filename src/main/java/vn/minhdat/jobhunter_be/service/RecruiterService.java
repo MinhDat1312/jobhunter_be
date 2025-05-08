@@ -2,6 +2,7 @@ package vn.minhdat.jobhunter_be.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
@@ -56,12 +57,12 @@ public class RecruiterService {
         return null;
     }
 
-    public ResultPaginationResponse handleGetAllRecruiters(Pageable pageable) {
-        Page<Recruiter> page = this.recruiterRepository.findAll(pageable);
+    public ResultPaginationResponse handleGetAllRecruiters(Specification<Recruiter> spec, Pageable pageable) {
+        Page<Recruiter> page = this.recruiterRepository.findAll(spec, pageable);
 
         ResultPaginationResponse.Meta meta = new ResultPaginationResponse.Meta();
-        meta.setCurrentPage(page.getNumber() + 1);
-        meta.setPageSize(page.getSize());
+        meta.setCurrentPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
         meta.setPages(page.getTotalPages());
         meta.setTotal(page.getTotalElements());
 

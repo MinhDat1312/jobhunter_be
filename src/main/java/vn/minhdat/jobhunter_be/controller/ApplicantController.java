@@ -1,10 +1,14 @@
 package vn.minhdat.jobhunter_be.controller;
 
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.ApplicantService;
@@ -66,8 +70,11 @@ public class ApplicantController {
     }
 
     @GetMapping("/applicants")
-    public ResponseEntity<ArrayList<Applicant>> getAllApplicants() {
-        ArrayList<Applicant> applicants = this.applicantService.handleGetAllApplicants();
-        return ResponseEntity.status(HttpStatus.OK).body(applicants);
+    public ResponseEntity<ResultPaginationResponse> getAllApplicants(
+            @Filter Specification<Applicant> spec,
+            Pageable pageable
+    ) {
+        ResultPaginationResponse result = this.applicantService.handleGetAllApplicants(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

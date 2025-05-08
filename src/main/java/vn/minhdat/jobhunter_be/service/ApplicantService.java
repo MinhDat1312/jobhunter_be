@@ -1,6 +1,10 @@
 package vn.minhdat.jobhunter_be.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 
@@ -53,7 +57,15 @@ public class ApplicantService {
         return null;
     }
 
-    public ArrayList<Applicant> handleGetAllApplicants() {
-        return (ArrayList<Applicant>) this.applicantRepository.findAll();
+    public ResultPaginationResponse handleGetAllApplicants(Specification<Applicant> spec, Pageable pageable) {
+        Page<Applicant> page = this.applicantRepository.findAll(spec, pageable);
+
+        ResultPaginationResponse.Meta meta = new ResultPaginationResponse.Meta();
+        meta.setCurrentPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+
+        return new ResultPaginationResponse(meta, page.getContent());
     }
 }
