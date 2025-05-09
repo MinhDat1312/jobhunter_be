@@ -4,12 +4,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.dto.response.RecruiterResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RecruiterService {
@@ -66,6 +69,26 @@ public class RecruiterService {
         meta.setPages(page.getTotalPages());
         meta.setTotal(page.getTotalElements());
 
-        return new ResultPaginationResponse(meta, page.getContent());
+        List<RecruiterResponse> recruiterResponses = page.getContent().stream()
+                                                                    .map(this :: convertToRecruiterResponse)
+                                                                    .toList();
+
+        return new ResultPaginationResponse(meta, recruiterResponses);
+    }
+
+    public RecruiterResponse convertToRecruiterResponse(Recruiter recruiter) {
+        RecruiterResponse recruiterResponse = new RecruiterResponse();
+
+        recruiterResponse.setUserId(recruiter.getUserId());
+        recruiterResponse.setContact(recruiter.getContact());
+        recruiterResponse.setAddress(recruiter.getAddress());
+        recruiterResponse.setUsername(recruiter.getUsername());
+        recruiterResponse.setCreatedAt(recruiter.getCreatedAt());
+        recruiterResponse.setUpdatedAt(recruiter.getUpdatedAt());
+        recruiterResponse.setDescription(recruiter.getDescription());
+        recruiterResponse.setLogo(recruiter.getLogo());
+        recruiterResponse.setWebsite(recruiter.getWebsite());
+
+        return recruiterResponse;
     }
 }

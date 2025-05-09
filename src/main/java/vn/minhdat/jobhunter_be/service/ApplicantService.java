@@ -4,11 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.dto.response.ApplicantResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -66,6 +68,25 @@ public class ApplicantService {
         meta.setPages(page.getTotalPages());
         meta.setTotal(page.getTotalElements());
 
-        return new ResultPaginationResponse(meta, page.getContent());
+        List<ApplicantResponse> applicantResponses = page.getContent().stream()
+                .map(this :: convertToApplicantResponse)
+                .toList();
+
+        return new ResultPaginationResponse(meta, applicantResponses);
+    }
+
+    public ApplicantResponse convertToApplicantResponse(Applicant applicant) {
+        ApplicantResponse applicantResponse = new ApplicantResponse();
+
+        applicantResponse.setUserId(applicant.getUserId());
+        applicantResponse.setContact(applicant.getContact());
+        applicantResponse.setAddress(applicant.getAddress());
+        applicantResponse.setUsername(applicant.getUsername());
+        applicantResponse.setCreatedAt(applicant.getCreatedAt());
+        applicantResponse.setUpdatedAt(applicant.getUpdatedAt());
+        applicantResponse.setEducation(applicant.getEducation());
+        applicantResponse.setLevel(applicant.getLevel());
+
+        return applicantResponse;
     }
 }
