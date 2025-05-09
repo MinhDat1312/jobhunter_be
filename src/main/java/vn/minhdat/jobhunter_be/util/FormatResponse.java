@@ -10,6 +10,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import vn.minhdat.jobhunter_be.dto.response.RestResponse;
+import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
 
 @ControllerAdvice
 public class FormatResponse implements ResponseBodyAdvice<Object> {
@@ -39,7 +40,8 @@ public class FormatResponse implements ResponseBodyAdvice<Object> {
             return body;
         } else {
             restResponse.setData(body);
-            restResponse.setMessage("Success");
+            ApiMessage apiMessage = returnType.getMethodAnnotation(ApiMessage.class);
+            restResponse.setMessage( apiMessage != null ? apiMessage.value() : "Success");
         }
 
         return restResponse;
