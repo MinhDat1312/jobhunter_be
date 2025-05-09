@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import vn.minhdat.jobhunter_be.dto.response.RestResponse;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandle {
             BadCredentialsException.class,
             UsernameNotFoundException.class
     })
-    ResponseEntity<RestResponse<Object>> handleExceptionResponse(Exception e){
+    ResponseEntity<RestResponse<Object>> handleSpecialExceptionResponse(Exception e){
         RestResponse<Object> response = new RestResponse<Object>();
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage(e.getMessage());
@@ -43,7 +44,7 @@ public class GlobalExceptionHandle {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<RestResponse<Object>> validationError(MethodArgumentNotValidException e) {
+    ResponseEntity<RestResponse<Object>> handleValidationError(MethodArgumentNotValidException e) {
         BindingResult result = e.getBindingResult();
         final List<FieldError> list = result.getFieldErrors();
         RestResponse<Object> res = new RestResponse<>();
@@ -61,5 +62,15 @@ public class GlobalExceptionHandle {
         res.setMessage(messages.size() > 1 ? messages : messages.getFirst());
 
         return ResponseEntity.badRequest().body(res);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    ResponseEntity<RestResponse<Object>> handleResourceException(Exception e){
+        RestResponse<Object> response = new RestResponse<Object>();
+        response.setStatusCode(HttpStatus.NOT_FOUND.value());
+        response.setMessage(e.getMessage());
+        response.setError("404 Not found. URL may not exist");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
