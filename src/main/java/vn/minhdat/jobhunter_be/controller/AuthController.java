@@ -12,31 +12,47 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
+import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
+import vn.minhdat.jobhunter_be.entity.User;
+import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 @RestController
 @RequestMapping("/api/v1")
 public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private SecurityUtil securityUtil;
+    private final SecurityUtil securityUtil;
+    private final UserService userService;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
-                          SecurityUtil securityUtil) {
+                          SecurityUtil securityUtil, UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = this.securityUtil.createToken(authentication);
+        LoginResponse loginResponse = new LoginResponse();
+        User currentUser = this.userService.handleGetUserByEmail(loginRequest.getEmail());
 
-        return ResponseEntity.status(HttpStatus.OK).body(accessToken);
+        if (currentUser != null) {
+            LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
+                    currentUser.getUserId(), currentUser.getContact().getEmail(), currentUser.getFullName()
+            );
+            loginResponse.setUserLogin(userLogin);
+        }
+
+        String accessToken = this.securityUtil.createToken(authentication);
+        loginResponse.setAccessToken(accessToken);
+
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 }
