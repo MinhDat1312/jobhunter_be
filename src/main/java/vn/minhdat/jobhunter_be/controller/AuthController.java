@@ -10,15 +10,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
+import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -70,5 +68,23 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(loginResponse);
+    }
+
+    @GetMapping("/auth/account")
+    @ApiMessage("Get information account")
+    public ResponseEntity<LoginResponse.UserLogin> getCurrentAccount(){
+        String currentEmail = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        User currentUser = this.userService.handleGetUserByEmail(currentEmail);
+        LoginResponse.UserLogin currentUserLogin = new LoginResponse.UserLogin();
+        if(currentUser != null) {
+            currentUserLogin.setUserId(currentUser.getUserId());
+            currentUserLogin.setFullName(currentUser.getFullName());
+            currentUserLogin.setEmail(currentUser.getContact().getEmail());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(currentUserLogin);
     }
 }
