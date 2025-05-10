@@ -1,7 +1,10 @@
 package vn.minhdat.jobhunter_be.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,6 +26,8 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+    @Value("${minhdat.jwt.refresh-token-validity-in-seconds}")
+    private long jwtRefreshToken;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
                           SecurityUtil securityUtil, UserService userService) {
@@ -42,17 +47,28 @@ public class AuthController {
 
         LoginResponse loginResponse = new LoginResponse();
         User currentUser = this.userService.handleGetUserByEmail(loginRequest.getEmail());
-
         if (currentUser != null) {
             LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
                     currentUser.getUserId(), currentUser.getContact().getEmail(), currentUser.getFullName()
             );
             loginResponse.setUserLogin(userLogin);
         }
-
-        String accessToken = this.securityUtil.createToken(authentication);
+        String accessToken = this.securityUtil.createAccessToken(authentication);
         loginResponse.setAccessToken(accessToken);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+        String refreshToken = this.securityUtil.createRefreshToken(loginRequest.getEmail(), loginResponse);
+        this.userService.updateRefreshToken(loginRequest.getEmail(), refreshToken);
+
+        ResponseCookie cookie = ResponseCookie
+                .from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(jwtRefreshToken)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(loginResponse);
     }
 }

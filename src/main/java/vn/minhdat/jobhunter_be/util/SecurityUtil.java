@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,13 +20,15 @@ public class SecurityUtil {
     private String jwtKey;
     @Value("${minhdat.jwt.access-token-validity-in-seconds}")
     private long jwtAccessToken;
+    @Value("${minhdat.jwt.refresh-token-validity-in-seconds}")
+    private long jwtRefreshToken;
     private final JwtEncoder jwtEncoder;
 
     public SecurityUtil(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createToken(Authentication authentication){
+    public String createAccessToken(Authentication authentication){
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtAccessToken, ChronoUnit.SECONDS);
 
@@ -33,7 +36,23 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(authentication.getName())
-                .claim("minhdat", authentication)
+                .claim("user", authentication)
+                .build();
+
+        JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
+
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
+    }
+
+    public String createRefreshToken(String email, LoginResponse loginResponse){
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.jwtRefreshToken, ChronoUnit.SECONDS);
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuedAt(now)
+                .expiresAt(validity)
+                .subject(email)
+                .claim("user", loginResponse.getUserLogin())
                 .build();
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
