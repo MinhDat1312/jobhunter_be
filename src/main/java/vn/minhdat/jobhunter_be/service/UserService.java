@@ -30,12 +30,16 @@ public class UserService {
         return this.userRepository.existsByContact_Email(email);
     }
 
-    public void updateRefreshToken(String email, String refreshToken) {
+    public void handleUpdateRefreshToken(String email, String refreshToken) {
         User user = this.userRepository.findByContact_Email(email);
         if (user != null) {
             user.setRefreshToken(refreshToken);
             this.userRepository.save(user);
         }
+    }
+
+    public User handleGetUserByRefreshTokenAndEmail(String refreshToken, String email) {
+        return this.userRepository.findByRefreshTokenAndContact_Email(refreshToken, email);
     }
 
     public ResultPaginationResponse handleGetAllUsers (Specification<User> spec, Pageable pageable) {

@@ -10,10 +10,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 import vn.minhdat.jobhunter_be.entity.User;
+import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
@@ -51,11 +53,11 @@ public class AuthController {
             );
             loginResponse.setUserLogin(userLogin);
         }
-        String accessToken = this.securityUtil.createAccessToken(authentication);
+        String accessToken = this.securityUtil.createAccessToken(loginRequest.getEmail(), loginResponse);
         loginResponse.setAccessToken(accessToken);
 
         String refreshToken = this.securityUtil.createRefreshToken(loginRequest.getEmail(), loginResponse);
-        this.userService.updateRefreshToken(loginRequest.getEmail(), refreshToken);
+        this.userService.handleUpdateRefreshToken(loginRequest.getEmail(), refreshToken);
 
         ResponseCookie cookie = ResponseCookie
                 .from("refreshToken", refreshToken)
@@ -86,5 +88,51 @@ public class AuthController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(currentUserLogin);
+    }
+
+    @GetMapping("/auth/refresh")
+    @ApiMessage("Refresh account")
+    public ResponseEntity<LoginResponse> refresh(
+            @CookieValue(name = "refreshToken", defaultValue = "missingValue")
+            String refreshToken
+    ) throws InvalidException {
+        if(refreshToken.equalsIgnoreCase("missingValue")) {
+            throw new InvalidException("You don't have a refresh token at cookie");
+        }
+
+        Jwt jwt = this.securityUtil.checkValidRefreshToken(refreshToken);
+        String email = jwt.getSubject();
+
+        User currentUser = this.userService.handleGetUserByRefreshTokenAndEmail(refreshToken, email);
+        if(currentUser == null){
+            throw new InvalidException("User not found");
+        }
+
+        LoginResponse loginResponse = new LoginResponse();
+
+        LoginResponse.UserLogin currentUserLogin = new LoginResponse.UserLogin();
+        currentUserLogin.setUserId(currentUser.getUserId());
+        currentUserLogin.setFullName(currentUser.getFullName());
+        currentUserLogin.setEmail(currentUser.getContact().getEmail());
+        loginResponse.setUserLogin(currentUserLogin);
+
+        String newAccessToken = this.securityUtil.createAccessToken(email, loginResponse);
+        loginResponse.setAccessToken(newAccessToken);
+
+        String newRefreshToken = this.securityUtil.createRefreshToken(email, loginResponse);
+        this.userService.handleUpdateRefreshToken(email, newRefreshToken);
+
+        ResponseCookie cookie = ResponseCookie
+                .from("refreshToken", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(jwtRefreshToken)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(loginResponse);
     }
 }
