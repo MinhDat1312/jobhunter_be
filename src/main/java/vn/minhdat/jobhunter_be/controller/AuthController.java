@@ -51,7 +51,7 @@ public class AuthController {
             LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
                     currentUser.getUserId(), currentUser.getContact().getEmail(), currentUser.getFullName()
             );
-            loginResponse.setUserLogin(userLogin);
+            loginResponse.setUser(userLogin);
         }
         String accessToken = this.securityUtil.createAccessToken(loginRequest.getEmail(), loginResponse);
         loginResponse.setAccessToken(accessToken);
@@ -74,20 +74,23 @@ public class AuthController {
 
     @GetMapping("/auth/account")
     @ApiMessage("Get information account")
-    public ResponseEntity<LoginResponse.UserLogin> getCurrentAccount(){
+    public ResponseEntity<LoginResponse.UserGetAccount> getCurrentAccount(){
         String currentEmail = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
         User currentUser = this.userService.handleGetUserByEmail(currentEmail);
         LoginResponse.UserLogin currentUserLogin = new LoginResponse.UserLogin();
+        LoginResponse.UserGetAccount userGetAccount = new LoginResponse.UserGetAccount();
         if(currentUser != null) {
             currentUserLogin.setUserId(currentUser.getUserId());
             currentUserLogin.setFullName(currentUser.getFullName());
             currentUserLogin.setEmail(currentUser.getContact().getEmail());
+
+            userGetAccount.setUser(currentUserLogin);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(currentUserLogin);
+        return ResponseEntity.status(HttpStatus.OK).body(userGetAccount);
     }
 
     @GetMapping("/auth/refresh")
@@ -114,7 +117,7 @@ public class AuthController {
         currentUserLogin.setUserId(currentUser.getUserId());
         currentUserLogin.setFullName(currentUser.getFullName());
         currentUserLogin.setEmail(currentUser.getContact().getEmail());
-        loginResponse.setUserLogin(currentUserLogin);
+        loginResponse.setUser(currentUserLogin);
 
         String newAccessToken = this.securityUtil.createAccessToken(email, loginResponse);
         loginResponse.setAccessToken(newAccessToken);
