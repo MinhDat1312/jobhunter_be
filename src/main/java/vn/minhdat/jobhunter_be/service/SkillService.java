@@ -39,7 +39,7 @@ public class SkillService {
             currentSkill.getJobs().forEach(job -> job.getSkills().remove(currentSkill));
         }
 
-        this.skillRepository.delete(currentSkill);
+        this.skillRepository.deleteById(currentSkill.getSkillId());
     }
 
     public Skill handGetSkillById(long id) {
