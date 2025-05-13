@@ -2,6 +2,7 @@ package vn.minhdat.jobhunter_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
@@ -19,6 +20,7 @@ public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long skillId;
+    @NotBlank(message = "Skill name is not empty")
     private String name;
 
     private Instant createdAt;
