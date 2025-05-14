@@ -6,7 +6,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.RecruiterResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
+import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 
 import java.util.ArrayList;
@@ -17,9 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class RecruiterService {
     private final RecruiterRepository recruiterRepository;
+    private final JobRepository jobRepository;
 
-    public RecruiterService(RecruiterRepository recruiterRepository) {
+    public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository) {
         this.recruiterRepository = recruiterRepository;
+        this.jobRepository = jobRepository;
     }
 
     public Recruiter handleCreateRecruiter(Recruiter recruiter) {
@@ -27,7 +31,15 @@ public class RecruiterService {
     }
 
     public void handleDeleteRecruiter(long id) {
-        this.recruiterRepository.deleteById(id);
+        Recruiter recruiter = this.handleGetRecruiterById(id);
+
+        if(recruiter != null){
+            if(recruiter.getJobs() != null){
+                List<Job> jobs = this.jobRepository.findByRecruiter(recruiter);
+                this.jobRepository.deleteAll(jobs);
+            }
+            this.recruiterRepository.deleteById(id);
+        }
     }
 
     public Recruiter handleUpdateRecruiter(Recruiter updateRecruiter) {

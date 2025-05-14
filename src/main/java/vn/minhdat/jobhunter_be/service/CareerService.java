@@ -6,9 +6,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Career;
+import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.repository.CareerRepository;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,10 +42,8 @@ public class CareerService {
         Career currentCareer = this.handleGetCareerById(id);
 
         if(currentCareer.getJobs() != null){
-            currentCareer.getJobs().forEach(job -> {
-                job.setCareer(null);
-                jobRepository.save(job);
-            });
+            List<Job> jobs = this.jobRepository.findByCareer(currentCareer);
+            this.jobRepository.deleteAll(jobs);
         }
 
         this.careerRepository.deleteById(currentCareer.getCareerId());
