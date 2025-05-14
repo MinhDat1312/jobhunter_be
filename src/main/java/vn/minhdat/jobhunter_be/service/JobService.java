@@ -1,0 +1,115 @@
+package vn.minhdat.jobhunter_be.service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.dto.response.JobResponse;
+import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.entity.Job;
+import vn.minhdat.jobhunter_be.entity.Skill;
+import vn.minhdat.jobhunter_be.repository.JobRepository;
+import vn.minhdat.jobhunter_be.repository.SkillRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class JobService {
+    private final JobRepository jobRepository;
+    private final SkillRepository skillRepository;
+
+    public JobService(JobRepository jobRepository, SkillRepository skillRepository) {
+        this.jobRepository = jobRepository;
+        this.skillRepository = skillRepository;
+    }
+
+    public JobResponse handleCreateJob(Job job) {
+        if(job.getSkills() != null){
+            List<Long> skillIds = job.getSkills().stream().map(Skill::getSkillId).toList();
+            List<Skill> skills = this.skillRepository.findBySkillIdIn(skillIds);
+            job.setSkills(skills);
+        }
+        Job res = this.jobRepository.save(job);
+
+        JobResponse jobResponse = convertToJobResponse(res);
+        jobResponse.setCreatedAt(res.getCreatedAt());
+        jobResponse.setCreatedBy(res.getCreatedBy());
+
+        return jobResponse;
+    }
+
+    public JobResponse handleUpdateJob(Job job) {
+        Job currentJob = this.handleGetJobById(job.getJobId());
+
+        if(job.getSkills() != null){
+            List<Long> skillIds = job.getSkills().stream().map(Skill::getSkillId).toList();
+            List<Skill> skills = this.skillRepository.findBySkillIdIn(skillIds);
+            currentJob.setSkills(skills);
+        }
+        currentJob.setDescription(job.getDescription());
+        currentJob.setStartDate(job.getStartDate());
+        currentJob.setEndDate(job.getEndDate());
+        currentJob.setActive(job.isActive());
+        currentJob.setLevel(job.getLevel());
+        currentJob.setQuantity(job.getQuantity());
+        currentJob.setSalary(job.getSalary());
+        currentJob.setTitle(job.getTitle());
+        currentJob.setWorkingType(job.getWorkingType());
+        currentJob.setLocation(job.getLocation());
+        Job res = this.jobRepository.save(currentJob);
+
+        JobResponse jobResponse = convertToJobResponse(res);
+        jobResponse.setUpdatedAt(res.getUpdatedAt());
+        jobResponse.setUpdatedBy(res.getUpdatedBy());
+
+        return jobResponse;
+    }
+
+    public void handleDeleteJob(long id) {
+        this.jobRepository.deleteById(id);
+    }
+
+    public Job handleGetJobById(long id) {
+        Optional<Job> job = this.jobRepository.findById(id);
+
+        if(job.isPresent()){
+            return job.get();
+        }
+        return null;
+    }
+
+    public ResultPaginationResponse handleGetAllJobs(Specification<Job> spec, Pageable pageable) {
+        Page<Job> page = this.jobRepository.findAll(spec, pageable);
+
+        ResultPaginationResponse.Meta meta = new ResultPaginationResponse.Meta();
+        meta.setCurrentPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+
+        return new ResultPaginationResponse(meta, page.getContent());
+    }
+
+    public JobResponse convertToJobResponse(Job job) {
+        JobResponse jobResponse = new JobResponse();
+
+        jobResponse.setId(job.getJobId());
+        jobResponse.setTitle(job.getTitle());
+        jobResponse.setLocation(job.getLocation());
+        jobResponse.setSalary(job.getSalary());
+        jobResponse.setQuantity(job.getQuantity());
+        jobResponse.setLevel(job.getLevel());
+        jobResponse.setStartDate(job.getStartDate());
+        jobResponse.setEndDate(job.getEndDate());
+        jobResponse.setActive(job.isActive());
+        jobResponse.setWorkingType(job.getWorkingType());
+
+        if(job.getSkills() != null){
+            List<String> skillStr = job.getSkills().stream().map(Skill::getName).toList();
+            jobResponse.setSkills(skillStr);
+        }
+
+        return jobResponse;
+    }
+}

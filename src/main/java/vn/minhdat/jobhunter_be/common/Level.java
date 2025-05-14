@@ -1,7 +1,8 @@
 package vn.minhdat.jobhunter_be.common;
 
 public enum Level {
-    FRESHER("Fresher"), JUNIOR("Junior"), SENIOR("Senior");
+    FRESHER("Fresher"), JUNIOR("Junior"), SENIOR("Senior"),
+    INTERN("Intern"), MIDDLE("Middle");
 
     private final String value;
 

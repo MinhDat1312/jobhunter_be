@@ -1,7 +1,9 @@
 package vn.minhdat.jobhunter_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import vn.minhdat.jobhunter_be.common.Level;
 import vn.minhdat.jobhunter_be.common.WorkingType;
@@ -26,13 +28,15 @@ public class Job {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private boolean isActive;
+    private boolean active;
     @Enumerated(EnumType.STRING)
     private Level level;
     private int quantity;
     private double salary;
+    @NotBlank(message = "Title is not empty")
     private String title;
     private WorkingType workingType;
+    @NotBlank(message = "Location is not empty")
     private String location;
 
     private Instant createdAt;
@@ -50,7 +54,7 @@ public class Job {
             joinColumns = @JoinColumn(name = "job_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
-    @JsonIgnore
+    @JsonIgnoreProperties(value = {"jobs"})
     private List<Skill> skills;
 
     @ManyToOne
