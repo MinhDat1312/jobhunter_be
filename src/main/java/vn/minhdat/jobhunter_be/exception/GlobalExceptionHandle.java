@@ -1,6 +1,5 @@
 package vn.minhdat.jobhunter_be.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,7 +33,7 @@ public class GlobalExceptionHandle {
             BadCredentialsException.class,
             UsernameNotFoundException.class
     })
-    ResponseEntity<RestResponse<Object>> handleSpecialExceptionResponse(Exception e){
+    ResponseEntity<RestResponse<Object>> handleAllSpecialExceptions(Exception e){
         RestResponse<Object> response = new RestResponse<Object>();
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage(e.getMessage());
@@ -44,7 +43,7 @@ public class GlobalExceptionHandle {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<RestResponse<Object>> handleValidationError(MethodArgumentNotValidException e) {
+    ResponseEntity<RestResponse<Object>> handleValidationException(MethodArgumentNotValidException e) {
         BindingResult result = e.getBindingResult();
         final List<FieldError> list = result.getFieldErrors();
         RestResponse<Object> res = new RestResponse<>();
@@ -72,5 +71,15 @@ public class GlobalExceptionHandle {
         response.setError("404 Not found. URL may not exist");
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(StorageException.class)
+    ResponseEntity<RestResponse<Object>> handleUploadFileException(StorageException e){
+        RestResponse<Object> response = new RestResponse<Object>();
+        response.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(e.getMessage());
+        response.setError("Upload file exception");
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
