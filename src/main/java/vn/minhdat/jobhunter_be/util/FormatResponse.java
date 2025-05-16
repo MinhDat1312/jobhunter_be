@@ -3,6 +3,7 @@ package vn.minhdat.jobhunter_be.util;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -32,7 +33,7 @@ public class FormatResponse implements ResponseBodyAdvice<Object> {
         RestResponse<Object> restResponse = new RestResponse<Object>();
         restResponse.setStatusCode(statusCode);
 
-        if(body instanceof String){
+        if(body instanceof String || body instanceof Resource){
             return body;
         }
 

@@ -1,11 +1,10 @@
 package vn.minhdat.jobhunter_be.service;
 
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -43,5 +42,26 @@ public class FileService {
         }
 
         return finalFileName;
+    }
+
+    public long handleGetFileSize(String fileName, String folder) throws URISyntaxException {
+        URI uri = new URI(folder + "/" + fileName);
+        Path path = Paths.get(uri);
+        File file = new File(path.toString());
+
+        if(file.isDirectory() || !file.exists()){
+            return 0;
+        }
+        return file.length();
+    }
+
+    public InputStreamResource handleDownloadFile(String fileName, String folder)
+            throws URISyntaxException, FileNotFoundException
+    {
+        URI uri = new URI(folder + "/" + fileName);
+        Path path = Paths.get(uri);
+        File file = new File(path.toString());
+
+        return new InputStreamResource(new FileInputStream(file));
     }
 }

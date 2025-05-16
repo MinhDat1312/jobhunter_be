@@ -1,17 +1,20 @@
 package vn.minhdat.jobhunter_be.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.minhdat.jobhunter_be.dto.response.UploadFileResponse;
 import vn.minhdat.jobhunter_be.exception.StorageException;
 import vn.minhdat.jobhunter_be.service.FileService;
+import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -54,5 +57,32 @@ public class FileController {
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(uploadFileResponse);
+    }
+
+    @GetMapping("/files")
+    @ApiMessage("Download a file")
+    public ResponseEntity<Resource> downloadFile(
+            @RequestParam(name = "fileName", required = false) String fileName,
+            @RequestParam(name = "folder", required = false) String folder
+    ) throws StorageException, URISyntaxException, FileNotFoundException {
+        if(fileName == null || folder == null) {
+            throw new StorageException("Missing required params : (fileName or folder) in query params");
+        }
+
+        String finalFolder = baseURI + folder;
+
+        long fileSize = this.fileService.handleGetFileSize(fileName, finalFolder);
+        if(fileSize <= 0) {
+            throw new StorageException("File with name = " + fileName + " not found");
+        }
+
+        InputStreamResource resource = this.fileService.handleDownloadFile(fileName, finalFolder);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentLength(fileSize)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 }
