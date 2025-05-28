@@ -20,6 +20,7 @@ public class ApplicationResponse {
     private long id;
     private String email;
     private String url;
+    private String recruiterName;
     @Enumerated(EnumType.STRING)
     private Status status;
 

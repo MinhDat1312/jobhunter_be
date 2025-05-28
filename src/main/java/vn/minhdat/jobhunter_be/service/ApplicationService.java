@@ -111,6 +111,7 @@ public class ApplicationService {
         applicationResponse.setId(application.getApplicationId());
         applicationResponse.setEmail(application.getEmail());
         applicationResponse.setUrl(application.getResumeUrl());
+        applicationResponse.setRecruiterName(job.getRecruiter().getFullName());
         applicationResponse.setStatus(application.getStatus());
         applicationResponse.setCreatedAt(application.getCreatedAt());
         applicationResponse.setCreatedBy(application.getCreatedBy());
