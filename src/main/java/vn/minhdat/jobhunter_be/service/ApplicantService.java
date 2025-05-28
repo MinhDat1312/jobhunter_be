@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.ApplicantResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
+import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
+import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +18,11 @@ import java.util.Optional;
 @Service
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
+    private final ApplicationRepository applicationRepository;
 
-    public ApplicantService(ApplicantRepository applicantRepository) {
+    public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository) {
         this.applicantRepository = applicantRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     public Applicant handleCreateApplicant(Applicant applicant) {
@@ -26,6 +30,12 @@ public class ApplicantService {
     }
 
     public void handleDeleteApplicant(long id) {
+        Applicant applicant = this.handleGetApplicantById(id);
+        if(applicant.getApplications() != null){
+            List<Application> applications = this.applicationRepository.findByApplicant(applicant);
+            this.applicationRepository.deleteAll(applications);
+        }
+
         this.applicantRepository.deleteById(id);
     }
 

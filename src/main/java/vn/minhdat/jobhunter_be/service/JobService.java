@@ -6,8 +6,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.JobResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Skill;
+import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.SkillRepository;
 
@@ -18,10 +20,13 @@ import java.util.Optional;
 public class JobService {
     private final JobRepository jobRepository;
     private final SkillRepository skillRepository;
+    private final ApplicationRepository applicationRepository;
 
-    public JobService(JobRepository jobRepository, SkillRepository skillRepository) {
+    public JobService(JobRepository jobRepository, SkillRepository skillRepository,
+                      ApplicationRepository applicationRepository) {
         this.jobRepository = jobRepository;
         this.skillRepository = skillRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     public JobResponse handleCreateJob(Job job) {
@@ -67,6 +72,12 @@ public class JobService {
     }
 
     public void handleDeleteJob(long id) {
+        Job job = this.handleGetJobById(id);
+        if(job.getApplications() != null){
+            List<Application> applications = this.applicationRepository.findByJob(job);
+            this.applicationRepository.deleteAll(applications);
+        }
+
         this.jobRepository.deleteById(id);
     }
 
