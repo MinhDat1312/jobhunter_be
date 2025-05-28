@@ -2,7 +2,10 @@ package vn.minhdat.jobhunter_be.controller;
 
 import com.turkraft.springfilter.boot.Filter;
 import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecification;
 import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +19,7 @@ import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.ApplicationService;
 import vn.minhdat.jobhunter_be.service.JobService;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
 
 import java.util.List;
@@ -26,16 +30,18 @@ import java.util.regex.Pattern;
 public class ApplicationController {
     private final ApplicationService applicationService;
     private final JobService jobService;
-    private FilterSpecificationConverter filterSpecificationConverter;
-    private FilterBuilder filterBuilder;
+    private final FilterSpecificationConverter filterSpecificationConverter;
+    private final FilterBuilder filterBuilder;
+    private final FilterParser filterParser;
 
     public ApplicationController(ApplicationService applicationService, JobService jobService,
                                  FilterSpecificationConverter filterSpecificationConverter,
-                                 FilterBuilder filterBuilder) {
+                                 FilterBuilder filterBuilder, FilterParser filterParser) {
         this.applicationService = applicationService;
         this.jobService = jobService;
         this.filterSpecificationConverter = filterSpecificationConverter;
         this.filterBuilder = filterBuilder;
+        this.filterParser = filterParser;
     }
 
     @PostMapping("/applications")
@@ -52,6 +58,7 @@ public class ApplicationController {
         }
 
         application.setResumeUrl(applicant.getResumeUrl());
+        application.setEmail(applicant.getContact().getEmail());
         ApplicationResponse applicationResponse = this.applicationService.handleCreateApplication(application);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(applicationResponse);
@@ -104,6 +111,17 @@ public class ApplicationController {
         Specification<Application> finalSpec = specification.and(spec);
 
         ResultPaginationResponse result = this.applicationService.handleGetAllApplications(finalSpec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/applications/by-applicant")
+    public ResponseEntity<ResultPaginationResponse> getAllApplicationsByApplicant(Pageable pageable) {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        FilterNode filterNode = filterParser.parse("email='" + email + "'");
+        FilterSpecification<Application> spec = filterSpecificationConverter.convert(filterNode);
+
+        ResultPaginationResponse result = this.applicationService.handleGetAllApplications(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

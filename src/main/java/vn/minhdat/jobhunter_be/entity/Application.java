@@ -19,6 +19,7 @@ public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long applicationId;
+    private String email;
     private String resumeUrl;
     @Enumerated(EnumType.STRING)
     private Status status;

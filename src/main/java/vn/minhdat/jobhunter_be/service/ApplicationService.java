@@ -1,5 +1,7 @@
 package vn.minhdat.jobhunter_be.service;
 
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -107,7 +109,7 @@ public class ApplicationService {
         Job job = this.handleGetJob(application);
 
         applicationResponse.setId(application.getApplicationId());
-        applicationResponse.setEmail(applicant.getContact().getEmail());
+        applicationResponse.setEmail(application.getEmail());
         applicationResponse.setUrl(application.getResumeUrl());
         applicationResponse.setStatus(application.getStatus());
         applicationResponse.setCreatedAt(application.getCreatedAt());
