@@ -62,7 +62,7 @@ public class CareerService {
         Page<Career> page = this.careerRepository.findAll(spec, pageable);
 
         ResultPaginationResponse.Meta meta = new ResultPaginationResponse.Meta();
-        meta.setCurrentPage(pageable.getPageNumber());
+        meta.setPage(pageable.getPageNumber());
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(page.getTotalPages());
         meta.setTotal(page.getTotalElements());

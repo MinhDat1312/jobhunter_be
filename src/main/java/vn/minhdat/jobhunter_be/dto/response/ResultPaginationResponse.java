@@ -18,7 +18,7 @@ public class ResultPaginationResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Meta{
-        private int currentPage;
+        private int page;
         private int pageSize;
         private int pages;
         private long total;
