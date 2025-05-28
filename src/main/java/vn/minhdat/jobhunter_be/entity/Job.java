@@ -57,6 +57,10 @@ public class Job {
     @JsonIgnoreProperties(value = {"jobs"})
     private List<Skill> skills;
 
+    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Application> applications;
+
     @ManyToOne
     @JoinColumn(name = "career_id")
     private Career career;
