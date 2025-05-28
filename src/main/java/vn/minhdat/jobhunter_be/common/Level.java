@@ -1,5 +1,8 @@
 package vn.minhdat.jobhunter_be.common;
 
+import lombok.Getter;
+
+@Getter
 public enum Level {
     FRESHER("Fresher"), JUNIOR("Junior"), SENIOR("Senior"),
     INTERN("Intern"), MIDDLE("Middle");
@@ -8,9 +11,5 @@ public enum Level {
 
     Level(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

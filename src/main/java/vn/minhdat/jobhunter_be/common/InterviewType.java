@@ -1,5 +1,8 @@
 package vn.minhdat.jobhunter_be.common;
 
+import lombok.Getter;
+
+@Getter
 public enum InterviewType {
     PERSON("Trực tiếp"), VIDEO("Video"), PHONE("Điện thoại"), TECHNICAL("Kỹ thuật");
 
@@ -7,9 +10,5 @@ public enum InterviewType {
 
     InterviewType(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

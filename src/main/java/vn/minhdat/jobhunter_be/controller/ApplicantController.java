@@ -16,7 +16,6 @@ import vn.minhdat.jobhunter_be.service.ApplicantService;
 import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
 
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 @RestController

@@ -6,8 +6,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.dto.response.UserResponse;
-import vn.minhdat.jobhunter_be.entity.Applicant;
-import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.repository.UserRepository;
 

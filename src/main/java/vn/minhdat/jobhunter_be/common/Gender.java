@@ -1,5 +1,8 @@
 package vn.minhdat.jobhunter_be.common;
 
+import lombok.Getter;
+
+@Getter
 public enum Gender {
     MALE("Nam"), FEMALE("Nữ"), OTHER("Khác");
 
@@ -7,9 +10,5 @@ public enum Gender {
 
     Gender(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

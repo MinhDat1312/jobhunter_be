@@ -11,7 +11,6 @@ import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

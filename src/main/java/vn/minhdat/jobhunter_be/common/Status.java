@@ -1,5 +1,8 @@
 package vn.minhdat.jobhunter_be.common;
 
+import lombok.Getter;
+
+@Getter
 public enum Status {
     PENDING("Đang xét"), ACCEPTED("Chấp nhận"), REJECTED("Từ chối");
 
@@ -7,9 +10,5 @@ public enum Status {
 
     Status(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

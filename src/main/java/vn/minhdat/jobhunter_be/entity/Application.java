@@ -1,7 +1,6 @@
 package vn.minhdat.jobhunter_be.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import vn.minhdat.jobhunter_be.common.Status;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
