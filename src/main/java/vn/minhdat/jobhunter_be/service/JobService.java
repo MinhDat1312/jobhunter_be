@@ -6,27 +6,30 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.JobResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
-import vn.minhdat.jobhunter_be.entity.Application;
-import vn.minhdat.jobhunter_be.entity.Job;
-import vn.minhdat.jobhunter_be.entity.Skill;
+import vn.minhdat.jobhunter_be.entity.*;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.SkillRepository;
+import vn.minhdat.jobhunter_be.repository.UserRepository;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobService {
     private final JobRepository jobRepository;
     private final SkillRepository skillRepository;
     private final ApplicationRepository applicationRepository;
+    private final UserRepository userRepository;
 
     public JobService(JobRepository jobRepository, SkillRepository skillRepository,
-                      ApplicationRepository applicationRepository) {
+                      ApplicationRepository applicationRepository, UserRepository userRepository) {
         this.jobRepository = jobRepository;
         this.skillRepository = skillRepository;
         this.applicationRepository = applicationRepository;
+        this.userRepository = userRepository;
     }
 
     public JobResponse handleCreateJob(Job job) {
@@ -34,6 +37,12 @@ public class JobService {
             List<Long> skillIds = job.getSkills().stream().map(Skill::getSkillId).toList();
             List<Skill> skills = this.skillRepository.findBySkillIdIn(skillIds);
             job.setSkills(skills);
+        }
+        if(job.getRecruiter() != null){
+            Optional<User> currentUser = this.userRepository.findById(job.getRecruiter().getUserId());
+            if(currentUser.isPresent() && currentUser.get() instanceof Recruiter recruiter){
+                job.setRecruiter(recruiter);
+            }
         }
         Job res = this.jobRepository.save(job);
 
@@ -51,6 +60,12 @@ public class JobService {
             List<Long> skillIds = job.getSkills().stream().map(Skill::getSkillId).toList();
             List<Skill> skills = this.skillRepository.findBySkillIdIn(skillIds);
             currentJob.setSkills(skills);
+        }
+        if(job.getRecruiter() != null){
+            Optional<User> currentUser = this.userRepository.findById(job.getRecruiter().getUserId());
+            if(currentUser.isPresent() && currentUser.get() instanceof Recruiter recruiter){
+                currentJob.setRecruiter(recruiter);
+            }
         }
         currentJob.setDescription(job.getDescription());
         currentJob.setStartDate(job.getStartDate());
@@ -122,5 +137,20 @@ public class JobService {
         }
 
         return jobResponse;
+    }
+
+    public List<Long> handleGetAllJobIdsByRecruiter() {
+        List<Long> jobIds = null;
+
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+        User currentUser = this.userRepository.findByContact_Email(email);
+        if(currentUser instanceof Recruiter){
+            List<Job> jobs = ( (Recruiter) currentUser ).getJobs();
+            if(jobs != null && !jobs.isEmpty()){
+                jobIds = jobs.stream().map(Job::getJobId).toList();
+            }
+        }
+
+        return jobIds;
     }
 }

@@ -1,6 +1,8 @@
 package vn.minhdat.jobhunter_be.controller;
 
 import com.turkraft.springfilter.boot.Filter;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,17 +15,27 @@ import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.ApplicationService;
+import vn.minhdat.jobhunter_be.service.JobService;
 import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1")
 public class ApplicationController {
     private final ApplicationService applicationService;
+    private final JobService jobService;
+    private FilterSpecificationConverter filterSpecificationConverter;
+    private FilterBuilder filterBuilder;
 
-    public ApplicationController(ApplicationService applicationService) {
+    public ApplicationController(ApplicationService applicationService, JobService jobService,
+                                 FilterSpecificationConverter filterSpecificationConverter,
+                                 FilterBuilder filterBuilder) {
         this.applicationService = applicationService;
+        this.jobService = jobService;
+        this.filterSpecificationConverter = filterSpecificationConverter;
+        this.filterBuilder = filterBuilder;
     }
 
     @PostMapping("/applications")
@@ -83,9 +95,15 @@ public class ApplicationController {
     }
 
     @GetMapping("/applications")
-    public ResponseEntity<ResultPaginationResponse> getAllApplications(
+    public ResponseEntity<ResultPaginationResponse> getAllApplicationsByRecruiter(
             @Filter Specification<Application> spec, Pageable pageable) {
-        ResultPaginationResponse result = this.applicationService.handleGetAllApplications(spec, pageable);
+        List<Long> jobIds = this.jobService.handleGetAllJobIdsByRecruiter();
+
+        Specification<Application> specification = filterSpecificationConverter
+                .convert(filterBuilder.field("job").in(filterBuilder.input(jobIds)).get());
+        Specification<Application> finalSpec = specification.and(spec);
+
+        ResultPaginationResponse result = this.applicationService.handleGetAllApplications(finalSpec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
