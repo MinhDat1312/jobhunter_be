@@ -20,4 +20,14 @@ public class UserResponse {
     private String username;
     private Instant createdAt;
     private Instant updatedAt;
+    private RoleUser role;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RoleUser {
+        private long roleId;
+        private String name;
+    }
 }

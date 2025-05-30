@@ -6,8 +6,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.RecruiterResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
+import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 
@@ -18,13 +20,20 @@ import java.util.Optional;
 public class RecruiterService {
     private final RecruiterRepository recruiterRepository;
     private final JobRepository jobRepository;
+    private final RoleService roleService;
 
-    public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository) {
+    public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository,
+                            RoleService roleService) {
         this.recruiterRepository = recruiterRepository;
         this.jobRepository = jobRepository;
+        this.roleService = roleService;
     }
 
     public Recruiter handleCreateRecruiter(Recruiter recruiter) {
+        if(recruiter.getRole() != null) {
+            Role role = this.roleService.handleGetRoleById(recruiter.getRole().getRoleId());
+            recruiter.setRole(role);
+        }
         return this.recruiterRepository.save(recruiter);
     }
 
@@ -53,6 +62,11 @@ public class RecruiterService {
             currentRecruiter.setDescription(updateRecruiter.getDescription());
             currentRecruiter.setLogo(updateRecruiter.getLogo());
             currentRecruiter.setWebsite(updateRecruiter.getWebsite());
+
+            if(updateRecruiter.getRole() != null) {
+                Role role = this.roleService.handleGetRoleById(updateRecruiter.getRole().getRoleId());
+                currentRecruiter.setRole(role);
+            }
 
             return this.recruiterRepository.save(currentRecruiter);
         }
@@ -98,6 +112,14 @@ public class RecruiterService {
         recruiterResponse.setDescription(recruiter.getDescription());
         recruiterResponse.setLogo(recruiter.getLogo());
         recruiterResponse.setWebsite(recruiter.getWebsite());
+
+        if(recruiter.getRole() != null) {
+            UserResponse.RoleUser roleUser = new UserResponse.RoleUser();
+            roleUser.setRoleId(recruiter.getRole().getRoleId());
+            roleUser.setName(recruiter.getRole().getName());
+
+            recruiterResponse.setRole(roleUser);
+        }
 
         return recruiterResponse;
     }

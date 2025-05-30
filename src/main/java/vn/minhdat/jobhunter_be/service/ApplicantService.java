@@ -6,8 +6,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.ApplicantResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.entity.Application;
+import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 
@@ -18,13 +20,20 @@ import java.util.Optional;
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
+    private final RoleService roleService;
 
-    public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository) {
+    public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository,
+                            RoleService roleService) {
         this.applicantRepository = applicantRepository;
         this.applicationRepository = applicationRepository;
+        this.roleService = roleService;
     }
 
     public Applicant handleCreateApplicant(Applicant applicant) {
+        if(applicant.getRole() != null){
+            Role role = this.roleService.handleGetRoleById(applicant.getRole().getRoleId());
+            applicant.setRole(role);
+        }
         return this.applicantRepository.save(applicant);
     }
 
@@ -52,6 +61,11 @@ public class ApplicantService {
             currentApplicant.setEducation(applicant.getEducation());
             currentApplicant.setLevel(applicant.getLevel());
             currentApplicant.setResumeUrl(applicant.getResumeUrl());
+
+            if(applicant.getRole() != null){
+                Role role = this.roleService.handleGetRoleById(applicant.getRole().getRoleId());
+                currentApplicant.setRole(role);
+            }
 
             return this.applicantRepository.save(currentApplicant);
         }
@@ -95,6 +109,14 @@ public class ApplicantService {
         applicantResponse.setUpdatedAt(applicant.getUpdatedAt());
         applicantResponse.setEducation(applicant.getEducation());
         applicantResponse.setLevel(applicant.getLevel());
+
+        if(applicant.getRole() != null) {
+            UserResponse.RoleUser roleUser = new UserResponse.RoleUser();
+            roleUser.setRoleId(applicant.getRole().getRoleId());
+            roleUser.setName(applicant.getRole().getName());
+
+            applicantResponse.setRole(roleUser);
+        }
 
         return applicantResponse;
     }

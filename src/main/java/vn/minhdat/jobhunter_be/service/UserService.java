@@ -66,6 +66,14 @@ public class UserService {
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());
 
+        if(user.getRole() != null) {
+            UserResponse.RoleUser roleUser = new UserResponse.RoleUser();
+            roleUser.setRoleId(user.getRole().getRoleId());
+            roleUser.setName(user.getRole().getName());
+
+            userResponse.setRole(roleUser);
+        }
+
         return userResponse;
     }
 }
