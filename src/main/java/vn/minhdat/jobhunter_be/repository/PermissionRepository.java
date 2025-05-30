@@ -5,7 +5,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import vn.minhdat.jobhunter_be.entity.Permission;
 
+import java.util.List;
+
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Long>, JpaSpecificationExecutor<Permission> {
     boolean existsByApiPathAndModuleAndMethod(String apiPath, String module, String method);
+    List<Permission> findByPermissionIdIn(List<Long> permissionIds);
 }
