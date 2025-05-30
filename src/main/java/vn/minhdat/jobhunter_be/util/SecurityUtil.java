@@ -34,6 +34,11 @@ public class SecurityUtil {
     }
 
     public String createAccessToken(String email, LoginResponse loginResponse) {
+        LoginResponse.UserInsideToken userInsideToken = new LoginResponse.UserInsideToken();
+        userInsideToken.setUserId(loginResponse.getUser().getUserId());
+        userInsideToken.setEmail(loginResponse.getUser().getEmail());
+        userInsideToken.setFullName(loginResponse.getUser().getFullName());
+
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtAccessToken, ChronoUnit.SECONDS);
 
@@ -45,7 +50,7 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email)
-                .claim("user", loginResponse.getUser())
+                .claim("user", userInsideToken)
                 .claim("permission", roles)
                 .build();
 
@@ -55,6 +60,11 @@ public class SecurityUtil {
     }
 
     public String createRefreshToken(String email, LoginResponse loginResponse){
+        LoginResponse.UserInsideToken userInsideToken = new LoginResponse.UserInsideToken();
+        userInsideToken.setUserId(loginResponse.getUser().getUserId());
+        userInsideToken.setEmail(loginResponse.getUser().getEmail());
+        userInsideToken.setFullName(loginResponse.getUser().getFullName());
+
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtRefreshToken, ChronoUnit.SECONDS);
 
@@ -62,7 +72,7 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email)
-                .claim("user", loginResponse.getUser())
+                .claim("user", userInsideToken)
                 .build();
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();

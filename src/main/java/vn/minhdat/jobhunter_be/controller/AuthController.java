@@ -49,7 +49,8 @@ public class AuthController {
         User currentUser = this.userService.handleGetUserByEmail(loginRequest.getEmail());
         if (currentUser != null) {
             LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
-                    currentUser.getUserId(), currentUser.getContact().getEmail(), currentUser.getFullName()
+                    currentUser.getUserId(), currentUser.getContact().getEmail(),
+                    currentUser.getFullName(), currentUser.getRole()
             );
             loginResponse.setUser(userLogin);
         }
@@ -86,6 +87,7 @@ public class AuthController {
             currentUserLogin.setUserId(currentUser.getUserId());
             currentUserLogin.setFullName(currentUser.getFullName());
             currentUserLogin.setEmail(currentUser.getContact().getEmail());
+            currentUserLogin.setRole(currentUser.getRole());
 
             userGetAccount.setUser(currentUserLogin);
         }
@@ -117,6 +119,8 @@ public class AuthController {
         currentUserLogin.setUserId(currentUser.getUserId());
         currentUserLogin.setFullName(currentUser.getFullName());
         currentUserLogin.setEmail(currentUser.getContact().getEmail());
+        currentUserLogin.setRole(currentUser.getRole());
+
         loginResponse.setUser(currentUserLogin);
 
         String newAccessToken = this.securityUtil.createAccessToken(email, loginResponse);

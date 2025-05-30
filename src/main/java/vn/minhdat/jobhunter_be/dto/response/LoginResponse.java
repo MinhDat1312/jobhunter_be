@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.minhdat.jobhunter_be.entity.Role;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ public class LoginResponse {
         private long userId;
         private String email;
         private String fullName;
+        private Role role;
     }
 
     @Getter
@@ -31,5 +33,15 @@ public class LoginResponse {
     @AllArgsConstructor
     public static class UserGetAccount {
         private UserLogin user;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserInsideToken {
+        private long userId;
+        private String email;
+        private String fullName;
     }
 }
