@@ -60,6 +60,10 @@ public abstract class User {
     protected Instant updatedAt;
     protected String updatedBy;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
     @PrePersist
     public void handleBeforeCreate(){
         this.createdAt = Instant.now();
