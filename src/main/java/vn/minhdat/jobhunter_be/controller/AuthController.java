@@ -10,12 +10,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
+import vn.minhdat.jobhunter_be.dto.response.ApplicantResponse;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
+import vn.minhdat.jobhunter_be.dto.response.RecruiterResponse;
+import vn.minhdat.jobhunter_be.entity.Applicant;
+import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
+import vn.minhdat.jobhunter_be.service.ApplicantService;
+import vn.minhdat.jobhunter_be.service.RecruiterService;
 import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
@@ -26,14 +33,22 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+    private final ApplicantService applicantService;
+    private final RecruiterService recruiterService;
+    private final PasswordEncoder passwordEncoder;
+
     @Value("${minhdat.jwt.refresh-token-validity-in-seconds}")
     private long jwtRefreshToken;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
-                          SecurityUtil securityUtil, UserService userService) {
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
+                          UserService userService, PasswordEncoder passwordEncoder,
+                          ApplicantService applicantService, RecruiterService recruiterService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
+        this.applicantService = applicantService;
+        this.recruiterService = recruiterService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/auth/login")
@@ -71,6 +86,36 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(loginResponse);
+    }
+
+    @PostMapping("/auth/register/applicant")
+    public ResponseEntity<ApplicantResponse> registerApplicant(@Valid @RequestBody Applicant applicant)
+            throws InvalidException {
+        if(this.userService.handleExistsByEmail(applicant.getContact().getEmail())) {
+            throw new InvalidException("Email exists: " + applicant.getContact().getEmail());
+        }
+
+        String hashPassword = passwordEncoder.encode(applicant.getPassword());
+        applicant.setPassword(hashPassword);
+
+        Applicant newApplicant = this.applicantService.handleCreateApplicant(applicant);
+        ApplicantResponse applicantResponse = this.applicantService.convertToApplicantResponse(newApplicant);
+        return ResponseEntity.status(HttpStatus.CREATED).body(applicantResponse);
+    }
+
+    @PostMapping("/auth/register/recruiter")
+    public ResponseEntity<RecruiterResponse> registerRecruiter(@Valid @RequestBody Recruiter recruiter)
+            throws InvalidException {
+        if(this.userService.handleExistsByEmail(recruiter.getContact().getEmail())) {
+            throw new InvalidException("Email exists: " + recruiter.getContact().getEmail());
+        }
+
+        String hashPassword = passwordEncoder.encode(recruiter.getPassword());
+        recruiter.setPassword(hashPassword);
+
+        Recruiter newRecruiter = this.recruiterService.handleCreateRecruiter(recruiter);
+        RecruiterResponse recruiterResponse = this.recruiterService.convertToRecruiterResponse(newRecruiter);
+        return ResponseEntity.status(HttpStatus.CREATED).body(recruiterResponse);
     }
 
     @GetMapping("/auth/account")
