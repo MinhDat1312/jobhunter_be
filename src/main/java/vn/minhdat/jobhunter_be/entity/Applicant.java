@@ -25,5 +25,6 @@ public class Applicant extends User{
 
     @OneToMany(mappedBy = "applicant", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private List<Application> applications;
 }

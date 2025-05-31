@@ -30,6 +30,7 @@ public class Skill {
 
     @ManyToMany(mappedBy = "skills", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private List<Job> jobs;
 
     @PrePersist

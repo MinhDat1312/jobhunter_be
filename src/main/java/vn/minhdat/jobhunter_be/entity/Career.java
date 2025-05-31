@@ -32,6 +32,7 @@ public class Career {
 
     @OneToMany(mappedBy = "career", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private List<Job> jobs;
 
     @PrePersist

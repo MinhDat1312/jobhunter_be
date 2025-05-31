@@ -44,6 +44,7 @@ public class Role {
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private List<User> users;
 
     @PrePersist

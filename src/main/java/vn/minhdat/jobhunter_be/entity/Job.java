@@ -55,10 +55,12 @@ public class Job {
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     @JsonIgnoreProperties(value = {"jobs"})
+    @ToString.Exclude
     private List<Skill> skills;
 
     @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private List<Application> applications;
 
     @ManyToOne
