@@ -2,6 +2,7 @@ package vn.minhdat.jobhunter_be;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 //disable security
 //@SpringBootApplication(exclude = {
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //})
 
 @SpringBootApplication
+@EnableScheduling
 public class JobhunterBeApplication {
 
 	public static void main(String[] args) {
