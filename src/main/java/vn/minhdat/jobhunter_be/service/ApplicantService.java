@@ -105,6 +105,7 @@ public class ApplicantService {
         applicantResponse.setContact(applicant.getContact());
         applicantResponse.setAddress(applicant.getAddress());
         applicantResponse.setUsername(applicant.getUsername());
+        applicantResponse.setFullName(applicant.getFullName());
         applicantResponse.setCreatedAt(applicant.getCreatedAt());
         applicantResponse.setUpdatedAt(applicant.getUpdatedAt());
         applicantResponse.setEducation(applicant.getEducation());

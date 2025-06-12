@@ -18,6 +18,7 @@ public class UserResponse {
     private Address address;
     private Contact contact;
     private String username;
+    private String fullName;
     private Instant createdAt;
     private Instant updatedAt;
     private RoleUser role;

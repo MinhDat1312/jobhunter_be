@@ -94,6 +94,7 @@ public class RecruiterService {
         meta.setTotal(page.getTotalElements());
 
         List<RecruiterResponse> recruiterResponses = page.getContent().stream()
+                                                                    .skip(1)
                                                                     .map(this :: convertToRecruiterResponse)
                                                                     .toList();
 
@@ -107,6 +108,7 @@ public class RecruiterService {
         recruiterResponse.setContact(recruiter.getContact());
         recruiterResponse.setAddress(recruiter.getAddress());
         recruiterResponse.setUsername(recruiter.getUsername());
+        recruiterResponse.setFullName(recruiter.getFullName());
         recruiterResponse.setCreatedAt(recruiter.getCreatedAt());
         recruiterResponse.setUpdatedAt(recruiter.getUpdatedAt());
         recruiterResponse.setDescription(recruiter.getDescription());
