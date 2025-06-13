@@ -10,10 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Address {
-    private String city;
-    private String country;
-    private String district;
     private String number;
     private String street;
     private String ward;
+    private String district;
+    private String city;
+    private String country;
 }

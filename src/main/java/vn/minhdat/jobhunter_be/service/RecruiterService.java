@@ -85,18 +85,24 @@ public class RecruiterService {
     }
 
     public ResultPaginationResponse handleGetAllRecruiters(Specification<Recruiter> spec, Pageable pageable) {
-        Page<Recruiter> page = this.recruiterRepository.findAll(spec, pageable);
+        List<Recruiter> allRecruiters = this.recruiterRepository.findAll();
+        List<Recruiter> paginated = allRecruiters.stream()
+                .skip(1)
+                .skip((long) (pageable.getPageNumber()) * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .toList();
 
+        int total = allRecruiters.size() - 1;
+        int pages = (int) Math.ceil((double) total / pageable.getPageSize());
         ResultPaginationResponse.Meta meta = new ResultPaginationResponse.Meta();
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
-        meta.setPages(page.getTotalPages());
-        meta.setTotal(page.getTotalElements());
+        meta.setPages(pages);
+        meta.setTotal(total);
 
-        List<RecruiterResponse> recruiterResponses = page.getContent().stream()
-                                                                    .skip(1)
-                                                                    .map(this :: convertToRecruiterResponse)
-                                                                    .toList();
+        List<RecruiterResponse> recruiterResponses = paginated.stream()
+                                                            .map(this :: convertToRecruiterResponse)
+                                                            .toList();
 
         return new ResultPaginationResponse(meta, recruiterResponses);
     }
