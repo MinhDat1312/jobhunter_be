@@ -1,6 +1,7 @@
 package vn.minhdat.jobhunter_be.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import vn.minhdat.jobhunter_be.common.Status;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
@@ -19,6 +20,7 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long applicationId;
     private String email;
+    @NotBlank(message = "Resume is required")
     private String resumeUrl;
     @Enumerated(EnumType.STRING)
     private Status status;

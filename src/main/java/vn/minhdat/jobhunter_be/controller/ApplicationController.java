@@ -51,13 +51,8 @@ public class ApplicationController {
         if(!checkUserAndJob){
             throw new InvalidException("User or Job doesn't exist");
         }
-
         Applicant applicant = this.applicationService.handleGetApplicant(application);
-        if(applicant.getResumeUrl() == null){
-            throw new InvalidException("Resume is required");
-        }
 
-        application.setResumeUrl(applicant.getResumeUrl());
         application.setEmail(applicant.getContact().getEmail());
         ApplicationResponse applicationResponse = this.applicationService.handleCreateApplication(application);
 
