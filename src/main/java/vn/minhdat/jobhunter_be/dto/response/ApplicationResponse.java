@@ -17,9 +17,9 @@ import java.time.Instant;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicationResponse {
-    private long id;
+    private long applicationId;
     private String email;
-    private String url;
+    private String resumeUrl;
     private String recruiterName;
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -37,8 +37,8 @@ public class ApplicationResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserApplication {
-        private long id;
-        private String name;
+        private long userId;
+        private String fullName;
     }
 
     @Getter
@@ -46,7 +46,7 @@ public class ApplicationResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class JobApplication {
-        private long id;
-        private String name;
+        private long jobId;
+        private String title;
     }
 }

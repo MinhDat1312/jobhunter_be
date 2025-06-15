@@ -33,7 +33,7 @@ public class ApplicationService {
         Application result = this.applicationRepository.save(application);
 
         ApplicationResponse applicationResponse = new ApplicationResponse();
-        applicationResponse.setId(result.getApplicationId());
+        applicationResponse.setApplicationId(result.getApplicationId());
         applicationResponse.setCreatedAt(result.getCreatedAt());
         applicationResponse.setCreatedBy(result.getCreatedBy());
 
@@ -46,7 +46,7 @@ public class ApplicationService {
         Application result = this.applicationRepository.save(resApplication);
 
         ApplicationResponse applicationResponse = new ApplicationResponse();
-        applicationResponse.setId(result.getApplicationId());
+        applicationResponse.setApplicationId(result.getApplicationId());
         applicationResponse.setUpdatedAt(result.getUpdatedAt());
         applicationResponse.setUpdatedBy(result.getUpdatedBy());
 
@@ -106,9 +106,9 @@ public class ApplicationService {
         Applicant applicant = this.handleGetApplicant(application);
         Job job = this.handleGetJob(application);
 
-        applicationResponse.setId(application.getApplicationId());
+        applicationResponse.setApplicationId(application.getApplicationId());
         applicationResponse.setEmail(application.getEmail());
-        applicationResponse.setUrl(application.getResumeUrl());
+        applicationResponse.setResumeUrl(application.getResumeUrl());
         applicationResponse.setRecruiterName(job.getRecruiter().getFullName());
         applicationResponse.setStatus(application.getStatus());
         applicationResponse.setCreatedAt(application.getCreatedAt());
