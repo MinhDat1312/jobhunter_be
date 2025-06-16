@@ -87,7 +87,11 @@ public class RecruiterController {
     public ResponseEntity<ResultPaginationResponse> getAllRecruiters(
             @Filter Specification<Recruiter> spec, Pageable pageable
     ) {
-        ResultPaginationResponse result = this.recruiterService.handleGetAllRecruiters(spec, pageable);
+        Specification<Recruiter> finalSpec = Specification.where(spec)
+                .and(((root, query, criteriaBuilder) ->
+                            criteriaBuilder.notEqual(root.get("userId"), "1")
+                        ));
+        ResultPaginationResponse result = this.recruiterService.handleGetAllRecruiters(finalSpec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
