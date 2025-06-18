@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import vn.minhdat.jobhunter_be.common.Gender;
-import vn.minhdat.jobhunter_be.entity.embeddable.Address;
 import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 import vn.minhdat.jobhunter_be.util.annotation.RequireAddressIfRecruiter;
@@ -38,8 +37,7 @@ public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected long userId;
-    @Embedded
-    protected Address address;
+    protected String address;
     @Embedded
     @Valid
     @NotNull(message = "Contact is not empty")

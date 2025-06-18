@@ -8,7 +8,6 @@ import vn.minhdat.jobhunter_be.entity.Permission;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.entity.User;
-import vn.minhdat.jobhunter_be.entity.embeddable.Address;
 import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
 import vn.minhdat.jobhunter_be.repository.PermissionRepository;
 import vn.minhdat.jobhunter_be.repository.RoleRepository;
@@ -117,10 +116,10 @@ public class DatabaseInitializer implements CommandLineRunner {
             Role role = this.roleRepository.findByName("SUPER_ADMIN");
 
             User user = new Recruiter();
-            user.setAddress(new Address("Nha Trang", "Việt Nam", "Phước Long", "137/20", "Phước Long", "Phước Long"));
+            user.setAddress("137/20 Phước Long, Nha Trang, Khánh Hòa");
             user.setContact(new Contact("admin@gmail.com", "0987654321"));
             user.setDob(LocalDate.of(2003, 12, 13));
-            user.setFullName("Nguyễn Thắng Minh Đạt");
+            user.setFullName("Admin");
             user.setGender(Gender.MALE);
             user.setUsername("admin");
             user.setPassword(this.passwordEncoder.encode("12345678"));
