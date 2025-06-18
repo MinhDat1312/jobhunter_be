@@ -49,6 +49,7 @@ public class ApplicantService {
 
     public Applicant handleUpdateApplicant(Applicant applicant) {
         Applicant currentApplicant = this.handleGetApplicantById(applicant.getUserId());
+        System.out.println(applicant);
 
         if(currentApplicant != null) {
             currentApplicant.setAddress(applicant.getAddress());
@@ -110,6 +111,9 @@ public class ApplicantService {
         applicantResponse.setUpdatedAt(applicant.getUpdatedAt());
         applicantResponse.setEducation(applicant.getEducation());
         applicantResponse.setLevel(applicant.getLevel());
+        applicantResponse.setGender(applicant.getGender());
+        applicantResponse.setDob(applicant.getDob());
+        applicantResponse.setAvailableStatus(applicant.isAvailableStatus());
 
         if(applicant.getRole() != null) {
             UserResponse.RoleUser roleUser = new UserResponse.RoleUser();

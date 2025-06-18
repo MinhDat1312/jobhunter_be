@@ -12,6 +12,7 @@ import vn.minhdat.jobhunter_be.common.Level;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApplicantResponse extends UserResponse{
+    private boolean availableStatus;
     private Education education;
     private Level level;
 }
