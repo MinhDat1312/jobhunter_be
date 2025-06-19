@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobResponse {
-    private long id;
+    private long jobId;
     private String title;
     private String location;
     private double salary;

@@ -119,7 +119,7 @@ public class JobService {
     public JobResponse convertToJobResponse(Job job) {
         JobResponse jobResponse = new JobResponse();
 
-        jobResponse.setId(job.getJobId());
+        jobResponse.setJobId(job.getJobId());
         jobResponse.setTitle(job.getTitle());
         jobResponse.setLocation(job.getLocation());
         jobResponse.setSalary(job.getSalary());
