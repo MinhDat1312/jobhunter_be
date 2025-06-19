@@ -55,7 +55,7 @@ public class SkillService {
         Page<Skill> page = this.skillRepository.findAll(spec, pageable);
 
         ResultPaginationResponse.Meta meta = new ResultPaginationResponse.Meta();
-        meta.setPage(pageable.getPageNumber());
+        meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(page.getTotalPages());
         meta.setTotal(page.getTotalElements());
