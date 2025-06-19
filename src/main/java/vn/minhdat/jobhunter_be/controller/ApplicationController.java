@@ -96,6 +96,13 @@ public class ApplicationController {
         }
     }
 
+    @GetMapping("/all-applications")
+    public ResponseEntity<ResultPaginationResponse> getAllApplications(
+            @Filter Specification<Application> spec, Pageable pageable) {
+        ResultPaginationResponse result = this.applicationService.handleGetAllApplications(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
     @GetMapping("/applications")
     public ResponseEntity<ResultPaginationResponse> getAllApplicationsByRecruiter(
             @Filter Specification<Application> spec, Pageable pageable) {

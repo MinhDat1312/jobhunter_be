@@ -84,6 +84,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             permissions.add(new Permission("Get application", "/api/v1/applications/{id}", "GET", "APPLICATIONS"));
             permissions.add(new Permission("Get all applications by recruiter", "/api/v1/applications", "GET", "APPLICATIONS"));
             permissions.add(new Permission("Get all applications by applicant", "/api/v1/applications/by-applicant", "GET", "APPLICATIONS"));
+            permissions.add(new Permission("Get all applications", "/api/v1/all-applications", "GET", "APPLICATIONS"));
 
             permissions.add(new Permission("Create permission", "/api/v1/permissions", "POST", "PERMISSIONS"));
             permissions.add(new Permission("Update permission", "/api/v1/permissions", "PUT", "PERMISSIONS"));
