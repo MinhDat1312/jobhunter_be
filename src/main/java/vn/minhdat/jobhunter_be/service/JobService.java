@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.JobResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.*;
-import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
-import vn.minhdat.jobhunter_be.repository.JobRepository;
-import vn.minhdat.jobhunter_be.repository.SkillRepository;
-import vn.minhdat.jobhunter_be.repository.UserRepository;
+import vn.minhdat.jobhunter_be.repository.*;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 import java.util.List;
@@ -20,13 +17,15 @@ import java.util.Optional;
 public class JobService {
     private final JobRepository jobRepository;
     private final SkillRepository skillRepository;
+    private final CareerRepository careerRepository;
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
 
-    public JobService(JobRepository jobRepository, SkillRepository skillRepository,
+    public JobService(JobRepository jobRepository, SkillRepository skillRepository, CareerRepository careerRepository,
                       ApplicationRepository applicationRepository, UserRepository userRepository) {
         this.jobRepository = jobRepository;
         this.skillRepository = skillRepository;
+        this.careerRepository = careerRepository;
         this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
     }
@@ -42,6 +41,10 @@ public class JobService {
             if(currentUser.isPresent() && currentUser.get() instanceof Recruiter recruiter){
                 job.setRecruiter(recruiter);
             }
+        }
+        if(job.getCareer() != null){
+            Optional<Career> currentCareer = this.careerRepository.findById(job.getCareer().getCareerId());
+            currentCareer.ifPresent(job::setCareer);
         }
         Job res = this.jobRepository.save(job);
 
@@ -65,6 +68,10 @@ public class JobService {
             if(currentUser.isPresent() && currentUser.get() instanceof Recruiter recruiter){
                 currentJob.setRecruiter(recruiter);
             }
+        }
+        if(job.getCareer() != null){
+            Optional<Career> currentCareer = this.careerRepository.findById(job.getCareer().getCareerId());
+            currentCareer.ifPresent(currentJob::setCareer);
         }
         currentJob.setDescription(job.getDescription());
         currentJob.setStartDate(job.getStartDate());
@@ -133,6 +140,10 @@ public class JobService {
         if(job.getSkills() != null){
             List<String> skillStr = job.getSkills().stream().map(Skill::getName).toList();
             jobResponse.setSkills(skillStr);
+        }
+
+        if(job.getCareer() != null){
+            jobResponse.setCareer(job.getCareer());
         }
 
         return jobResponse;

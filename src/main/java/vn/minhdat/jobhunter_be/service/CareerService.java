@@ -32,7 +32,6 @@ public class CareerService {
 
         if(currentCareer != null){
             currentCareer.setName(career.getName());
-            currentCareer.setDescription(career.getDescription());
             return this.careerRepository.save(currentCareer);
         }
         return null;

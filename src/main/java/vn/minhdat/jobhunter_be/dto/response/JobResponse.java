@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.minhdat.jobhunter_be.common.Level;
 import vn.minhdat.jobhunter_be.common.WorkingType;
+import vn.minhdat.jobhunter_be.entity.Career;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ public class JobResponse {
     private LocalDate endDate;
     private boolean active;
     private List<String> skills;
+    private Career career;
 
     private Instant createdAt;
     private String createdBy;

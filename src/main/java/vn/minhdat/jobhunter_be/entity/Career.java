@@ -20,8 +20,6 @@ public class Career {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long careerId;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description;
     @NotBlank(message = "Career name is not empty")
     private String name;
 
