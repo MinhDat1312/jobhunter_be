@@ -35,6 +35,7 @@ public class Job {
     private double salary;
     @NotBlank(message = "Title is not empty")
     private String title;
+    @Enumerated(EnumType.STRING)
     private WorkingType workingType;
     @NotBlank(message = "Location is not empty")
     private String location;
