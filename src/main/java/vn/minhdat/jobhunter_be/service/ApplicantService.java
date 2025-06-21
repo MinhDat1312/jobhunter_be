@@ -53,7 +53,6 @@ public class ApplicantService {
 
     public Applicant handleUpdateApplicant(Applicant applicant) {
         Applicant currentApplicant = this.handleGetApplicantById(applicant.getUserId());
-        System.out.println(applicant);
 
         if(currentApplicant != null) {
             currentApplicant.setAddress(applicant.getAddress());
@@ -66,6 +65,7 @@ public class ApplicantService {
             currentApplicant.setEducation(applicant.getEducation());
             currentApplicant.setLevel(applicant.getLevel());
             currentApplicant.setResumeUrl(applicant.getResumeUrl());
+            currentApplicant.setAvatar(applicant.getAvatar());
 
             if(applicant.getRole() != null){
                 Role role = this.roleService.handleGetRoleById(applicant.getRole().getRoleId());
@@ -118,6 +118,7 @@ public class ApplicantService {
         applicantResponse.setGender(applicant.getGender());
         applicantResponse.setDob(applicant.getDob());
         applicantResponse.setAvailableStatus(applicant.isAvailableStatus());
+        applicantResponse.setAvatar(applicant.getAvatar());
 
         if(applicant.getRole() != null) {
             UserResponse.RoleUser roleUser = new UserResponse.RoleUser();

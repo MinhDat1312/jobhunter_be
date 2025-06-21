@@ -16,7 +16,6 @@ import java.util.List;
 public class Recruiter extends User{
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
-    private String logo;
     private String website;
 
     @OneToMany(mappedBy = "recruiter", fetch = FetchType.LAZY)

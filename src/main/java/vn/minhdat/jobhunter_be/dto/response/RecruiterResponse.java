@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RecruiterResponse extends UserResponse {
     private String description;
-    private String logo;
     private String website;
 }

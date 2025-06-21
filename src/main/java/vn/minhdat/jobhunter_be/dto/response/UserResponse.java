@@ -22,6 +22,7 @@ public class UserResponse {
     private Contact contact;
     private String username;
     private String fullName;
+    private String avatar;
     private Gender gender;
     private LocalDate dob;
     private Instant createdAt;

@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
-import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
@@ -33,6 +32,7 @@ public class UserController {
     public <T extends User> ResponseEntity<T> getUserByEmail() {
         String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : null;
         User user =  this.userService.handleGetUserByEmail(email);
+        System.out.println();
         return ResponseEntity.status(HttpStatus.OK).body((T) user);
     }
 

@@ -64,7 +64,7 @@ public class RecruiterService {
             currentRecruiter.setGender(updateRecruiter.getGender());
             currentRecruiter.setUsername(updateRecruiter.getUsername());
             currentRecruiter.setDescription(updateRecruiter.getDescription());
-            currentRecruiter.setLogo(updateRecruiter.getLogo());
+            currentRecruiter.setAvatar(updateRecruiter.getAvatar());
             currentRecruiter.setWebsite(updateRecruiter.getWebsite());
 
             if(updateRecruiter.getRole() != null) {
@@ -115,8 +115,8 @@ public class RecruiterService {
         recruiterResponse.setCreatedAt(recruiter.getCreatedAt());
         recruiterResponse.setUpdatedAt(recruiter.getUpdatedAt());
         recruiterResponse.setDescription(recruiter.getDescription());
-        recruiterResponse.setLogo(recruiter.getLogo());
         recruiterResponse.setWebsite(recruiter.getWebsite());
+        recruiterResponse.setAvatar(recruiter.getAvatar());
 
         if(recruiter.getRole() != null) {
             UserResponse.RoleUser roleUser = new UserResponse.RoleUser();

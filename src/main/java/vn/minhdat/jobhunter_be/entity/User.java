@@ -51,6 +51,7 @@ public abstract class User {
     @Column(columnDefinition = "MEDIUMTEXT")
     protected String refreshToken;
     protected String username;
+    protected String avatar;
 
     protected Instant createdAt;
     protected String createdBy;

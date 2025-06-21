@@ -95,7 +95,7 @@ public class AuthController {
             throw new InvalidException("Email exists: " + applicant.getContact().getEmail());
         }
 
-        String hashPassword = passwordEncoder.encode(applicant.getPassword());
+        String hashPassword = this.passwordEncoder.encode(applicant.getPassword());
         applicant.setPassword(hashPassword);
 
         Applicant newApplicant = this.applicantService.handleCreateApplicant(applicant);
@@ -110,7 +110,7 @@ public class AuthController {
             throw new InvalidException("Email exists: " + recruiter.getContact().getEmail());
         }
 
-        String hashPassword = passwordEncoder.encode(recruiter.getPassword());
+        String hashPassword = this.passwordEncoder.encode(recruiter.getPassword());
         recruiter.setPassword(hashPassword);
 
         Recruiter newRecruiter = this.recruiterService.handleCreateRecruiter(recruiter);
