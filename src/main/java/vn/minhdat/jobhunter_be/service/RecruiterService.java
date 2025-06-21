@@ -21,6 +21,7 @@ public class RecruiterService {
     private final RecruiterRepository recruiterRepository;
     private final JobRepository jobRepository;
     private final RoleService roleService;
+    private final String HR = "HR";
 
     public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository,
                             RoleService roleService) {
@@ -30,10 +31,13 @@ public class RecruiterService {
     }
 
     public Recruiter handleCreateRecruiter(Recruiter recruiter) {
+        Role role = null;
         if(recruiter.getRole() != null) {
-            Role role = this.roleService.handleGetRoleById(recruiter.getRole().getRoleId());
-            recruiter.setRole(role);
+            role = this.roleService.handleGetRoleById(recruiter.getRole().getRoleId());
+        } else {
+            role = this.roleService.handleGetRoleByName(HR);
         }
+        recruiter.setRole(role);
         return this.recruiterRepository.save(recruiter);
     }
 

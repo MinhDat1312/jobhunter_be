@@ -21,6 +21,7 @@ public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
     private final RoleService roleService;
+    private final String APPLICANT = "APPLICANT";
 
     public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository,
                             RoleService roleService) {
@@ -30,10 +31,13 @@ public class ApplicantService {
     }
 
     public Applicant handleCreateApplicant(Applicant applicant) {
+        Role role = null;
         if(applicant.getRole() != null){
-            Role role = this.roleService.handleGetRoleById(applicant.getRole().getRoleId());
-            applicant.setRole(role);
+            role = this.roleService.handleGetRoleById(applicant.getRole().getRoleId());
+        } else {
+            role = this.roleService.handleGetRoleByName(APPLICANT);
         }
+        applicant.setRole(role);
         return this.applicantRepository.save(applicant);
     }
 

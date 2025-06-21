@@ -56,6 +56,10 @@ public class RoleService {
         return this.roleRepository.findById(id).orElse(null);
     }
 
+    public Role handleGetRoleByName(String name) {
+        return this.roleRepository.findByName(name);
+    }
+
     public ResultPaginationResponse handleGetAllRoles(Specification<Role> spec, Pageable pageable) {
         Page<Role> page = this.roleRepository.findAll(spec, pageable);
 
