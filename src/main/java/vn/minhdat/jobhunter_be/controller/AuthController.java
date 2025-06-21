@@ -131,6 +131,7 @@ public class AuthController {
         if(currentUser != null) {
             currentUserLogin.setUserId(currentUser.getUserId());
             currentUserLogin.setFullName(currentUser.getFullName());
+            currentUserLogin.setUsername(currentUser.getUsername());
             currentUserLogin.setEmail(currentUser.getContact().getEmail());
             currentUserLogin.setRole(currentUser.getRole());
 
