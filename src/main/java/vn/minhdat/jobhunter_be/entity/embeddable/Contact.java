@@ -15,6 +15,5 @@ import lombok.Setter;
 public class Contact {
     @NotBlank(message = "Email is not empty")
     private String email;
-    @NotBlank(message = "Phone is not empty")
     private String phone;
 }

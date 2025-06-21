@@ -50,7 +50,6 @@ public abstract class User {
     protected String password;
     @Column(columnDefinition = "MEDIUMTEXT")
     protected String refreshToken;
-    @NotBlank(message = "Username is not empty")
     protected String username;
 
     protected Instant createdAt;

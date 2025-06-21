@@ -65,7 +65,7 @@ public class AuthController {
         if (currentUser != null) {
             LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
                     currentUser.getUserId(), currentUser.getContact().getEmail(),
-                    currentUser.getFullName(), currentUser.getRole()
+                    currentUser.getFullName(), currentUser.getUsername(), currentUser.getRole()
             );
             loginResponse.setUser(userLogin);
         }
