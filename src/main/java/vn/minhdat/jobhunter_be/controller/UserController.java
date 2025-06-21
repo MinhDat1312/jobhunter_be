@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.service.UserService;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -25,6 +27,13 @@ public class UserController {
     ) {
         ResultPaginationResponse result = this.userService.handleGetAllUsers(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @PostMapping("/users")
+    public <T extends User> ResponseEntity<T> getUserByEmail() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : null;
+        User user =  this.userService.handleGetUserByEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body((T) user);
     }
 
 }
