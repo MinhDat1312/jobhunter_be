@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import vn.minhdat.jobhunter_be.common.Role;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
 import vn.minhdat.jobhunter_be.dto.response.ApplicantResponse;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
@@ -65,7 +66,9 @@ public class AuthController {
         if (currentUser != null) {
             LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
                     currentUser.getUserId(), currentUser.getContact().getEmail(),
-                    currentUser.getFullName(), currentUser.getUsername(), currentUser.getRole()
+                    currentUser.getFullName(), currentUser.getUsername(), currentUser.getAvatar(),
+                    currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue()
+                    , currentUser.getRole()
             );
             loginResponse.setUser(userLogin);
         }
@@ -133,6 +136,8 @@ public class AuthController {
             currentUserLogin.setFullName(currentUser.getFullName());
             currentUserLogin.setUsername(currentUser.getUsername());
             currentUserLogin.setEmail(currentUser.getContact().getEmail());
+            currentUserLogin.setAvatar(currentUser.getAvatar());
+            currentUserLogin.setType(currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue());
             currentUserLogin.setRole(currentUser.getRole());
 
             userGetAccount.setUser(currentUserLogin);

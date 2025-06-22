@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Applicant extends User{
     private boolean availableStatus = true;
     @Enumerated(EnumType.STRING)
