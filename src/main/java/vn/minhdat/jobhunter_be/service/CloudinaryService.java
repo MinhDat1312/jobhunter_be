@@ -23,8 +23,10 @@ public class CloudinaryService {
         try {
             Map<String, Object> result = this.cloudinary.uploader()
                     .upload(file.getBytes(),
-                            Map.of("public_id",
-                                    "jobhunter/" + folder + "/" + fileName));
+                            Map.of("public_id","jobhunter/" + folder + "/" + fileName,
+                                    "resource_type", "auto"
+                            )
+                    );
             String url = (String) result.get("secure_url");
             String publicId = (String) result.get("public_id");
             return CloudinaryResponse.builder()
@@ -33,6 +35,14 @@ public class CloudinaryService {
 
         } catch (Exception e) {
             throw new InvalidException("Failed to upload file");
+        }
+    }
+
+    public void handleDeleteFile(String publicId) throws InvalidException {
+        try {
+            this.cloudinary.uploader().destroy(publicId, Map.of());
+        } catch (Exception e){
+            throw new InvalidException("Failed to delete file");
         }
     }
 }

@@ -39,31 +39,4 @@ public class CloudinaryController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
-//    @GetMapping("/files")
-//    @ApiMessage("Download a file")
-//    public ResponseEntity<Resource> downloadFile(
-//            @RequestParam(name = "fileName", required = false) String fileName,
-//            @RequestParam(name = "folder", required = false) String folder
-//    ) throws StorageException, URISyntaxException, FileNotFoundException {
-//        if(fileName == null || folder == null) {
-//            throw new StorageException("Missing required params : (fileName or folder) in query params");
-//        }
-//
-//        String finalFolder = baseURI + folder;
-//
-//        long fileSize = this.fileService.handleGetFileSize(fileName, finalFolder);
-//        if(fileSize <= 0) {
-//            throw new StorageException("File with name = " + fileName + " not found");
-//        }
-//
-//        InputStreamResource resource = this.fileService.handleDownloadFile(fileName, finalFolder);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-//                .contentLength(fileSize)
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body(resource);
-//    }
 }
