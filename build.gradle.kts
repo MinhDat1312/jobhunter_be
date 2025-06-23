@@ -34,6 +34,11 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j")
 
+	// https://mvnrepository.com/artifact/com.cloudinary/cloudinary-http44
+	implementation ("com.cloudinary:cloudinary-http44:1.39.0")
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	implementation("commons-io:commons-io:2.19.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
