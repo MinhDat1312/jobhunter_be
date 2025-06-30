@@ -5,6 +5,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -56,12 +57,13 @@ public class EmailService {
     }
 
 //    Send email with template
-    public void handleSendEmailWithTemplate(String recipient, String subject, String templateName){
+    @Async
+    public void handleSendEmailWithTemplate(String recipient, String subject, String templateName,
+                                            String username, Object object){
         Context context = new Context();
 
-        context.setVariable("name", "Minh Đạt");
-        List<Job> jobs = this.jobRepository.findAll();
-        context.setVariable("jobs", jobs);
+        context.setVariable("name", username);
+        context.setVariable("jobs", object);
 
         String content = this.templateEngine.process(templateName, context);
         this.handleSendEmailSync(recipient, subject, content, false, true);

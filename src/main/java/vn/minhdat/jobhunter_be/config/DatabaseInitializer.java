@@ -4,10 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.common.Gender;
-import vn.minhdat.jobhunter_be.entity.Permission;
-import vn.minhdat.jobhunter_be.entity.Recruiter;
-import vn.minhdat.jobhunter_be.entity.Role;
-import vn.minhdat.jobhunter_be.entity.User;
+import vn.minhdat.jobhunter_be.entity.*;
 import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
 import vn.minhdat.jobhunter_be.repository.PermissionRepository;
 import vn.minhdat.jobhunter_be.repository.RoleRepository;
@@ -99,6 +96,12 @@ public class DatabaseInitializer implements CommandLineRunner {
             permissions.add(new Permission("Delete role", "/api/v1/roles/{id}", "DELETE", "ROLES"));
             permissions.add(new Permission("Get role", "/api/v1/roles/{id}", "GET", "ROLES"));
             permissions.add(new Permission("Get all roles", "/api/v1/roles", "GET", "ROLES"));
+
+            permissions.add(new Permission("Create a subscriber", "/api/v1/subscribers", "POST", "SUBSCRIBERS"));
+            permissions.add(new Permission("Update a subscriber", "/api/v1/subscribers", "PUT", "SUBSCRIBERS"));
+            permissions.add(new Permission("Delete a subscriber", "/api/v1/subscribers/{id}", "DELETE", "SUBSCRIBERS"));
+            permissions.add(new Permission("Get a subscriber by id", "/api/v1/subscribers/{id}", "GET", "SUBSCRIBERS"));
+            permissions.add(new Permission("Get subscribers with pagination", "/api/v1/subscribers", "GET", "SUBSCRIBERS"));
 
             this.permissionRepository.saveAll(permissions);
         }

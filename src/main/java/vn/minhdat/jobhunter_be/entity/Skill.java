@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,6 +32,11 @@ public class Skill {
     @JsonIgnore
     @ToString.Exclude
     private List<Job> jobs;
+
+    @ManyToMany(mappedBy = "skills", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private List<Subscriber> subscribers;
 
     @PrePersist
     public void handleBeforeCreate(){
