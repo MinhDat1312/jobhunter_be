@@ -6,7 +6,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.EmailJobResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
-import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Skill;
 import vn.minhdat.jobhunter_be.entity.Subscriber;
