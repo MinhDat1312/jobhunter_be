@@ -1,12 +1,16 @@
 package vn.minhdat.jobhunter_be.service;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.common.Status;
+import vn.minhdat.jobhunter_be.entity.Application;
+import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 
+import java.time.ZoneId;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,42 +43,49 @@ public class DashboardService {
         );
     }
 
-    public Map<String, Long> handleStatisticsJob(){
-        long countJobActive = this.jobRepository.countByActive(true);
-        long countJobInactive = this.jobRepository.countByActive(false);
+    public Map<String, Long> handleStatisticsJob(Specification<Job> spec){
+        long totalJobs = this.jobRepository.count(spec);
+
+        Specification<Job> activeJobSpec = spec.and((root, query, cb) ->
+                cb.isTrue(root.get("active"))
+        );
+        long countActiveJob = this.jobRepository.count(activeJobSpec);
 
         return Map.of(
-                "active", countJobActive,
-                "inactive", countJobInactive
+                "active", countActiveJob,
+                "inactive", totalJobs - countActiveJob
         );
     }
 
-    public Map<Status, Long> handleStatisticsApplication(){
-        List<Object[]> result = this.applicationRepository.countByStatus();
+    public Map<Status, Long> handleStatisticsApplication(Specification<Application> spec){
+        List<Application> applications = this.applicationRepository.findAll(spec);
 
-        Map<Status, Long> mapStatus = new EnumMap<>(Status.class);
-        for (Object[] row : result) {
-            Status status = (Status) row[0];
-            Long count = (Long) row[1];
-            mapStatus.put(status, count);
-        }
-        for (Status s : Status.values()) {
-            mapStatus.putIfAbsent(s, 0L);
+        Map<Status, Long> result = applications.stream()
+                .collect(Collectors.groupingBy(
+                        Application::getStatus,
+                        () -> new EnumMap<>(Status.class),
+                        Collectors.counting()
+                ));
+        for (Status status : Status.values()) {
+            result.putIfAbsent(status, 0L);
         }
 
-        return mapStatus;
+        return result;
     }
 
-    public Map<Integer, Long> handleStatisticsApplicationByYear(int year){
-        List<Object[]> result = this.applicationRepository.countByYear(year);
-        Map<Integer, Long> months = result.stream()
-                .collect(Collectors.toMap(
-                        row -> (Integer) row[0],
-                        row -> (Long) row[1]
+    public Map<Integer, Long> handleStatisticsApplicationByYear(int year, Specification<Application> spec){
+        List<Application> applications = this.applicationRepository.findAll(spec);
+
+        Map<Integer, Long> groupedApplications = applications.stream()
+                .filter(app -> app.getCreatedAt().atZone(ZoneId.systemDefault()).getYear() == year)
+                .collect(Collectors.groupingBy(
+                        app -> app.getCreatedAt().atZone(ZoneId.systemDefault()).getMonthValue(),
+                        Collectors.counting()
                 ));
+
         Map<Integer, Long> fullMonths = new LinkedHashMap<>();
-        for(int month=1; month<=12; month++){
-            fullMonths.put(month, months.getOrDefault(month, 0L));
+        for (int month = 1; month <= 12; month++) {
+            fullMonths.put(month, groupedApplications.getOrDefault(month, 0L));
         }
 
         return fullMonths;
