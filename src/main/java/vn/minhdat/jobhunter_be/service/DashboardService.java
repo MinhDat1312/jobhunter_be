@@ -8,8 +8,10 @@ import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardService {
@@ -27,7 +29,7 @@ public class DashboardService {
         this.applicationRepository = applicationRepository;
     }
 
-    public Map<String, Long> statisticsUser(){
+    public Map<String, Long> handleStatisticsUser(){
         long countApplicants = this.applicantRepository.count();
         long countRecruiters = this.recruiterRepository.count() - 1;
 
@@ -37,7 +39,7 @@ public class DashboardService {
         );
     }
 
-    public Map<String, Long> statisticsJob(){
+    public Map<String, Long> handleStatisticsJob(){
         long countJobActive = this.jobRepository.countByActive(true);
         long countJobInactive = this.jobRepository.countByActive(false);
 
@@ -47,11 +49,11 @@ public class DashboardService {
         );
     }
 
-    public Map<Status, Long> statisticsApplication(){
-        List<Object[]> results = this.applicationRepository.countByStatus();
+    public Map<Status, Long> handleStatisticsApplication(){
+        List<Object[]> result = this.applicationRepository.countByStatus();
 
         Map<Status, Long> mapStatus = new EnumMap<>(Status.class);
-        for (Object[] row : results) {
+        for (Object[] row : result) {
             Status status = (Status) row[0];
             Long count = (Long) row[1];
             mapStatus.put(status, count);
@@ -61,5 +63,20 @@ public class DashboardService {
         }
 
         return mapStatus;
+    }
+
+    public Map<Integer, Long> handleStatisticsApplicationByYear(int year){
+        List<Object[]> result = this.applicationRepository.countByYear(year);
+        Map<Integer, Long> months = result.stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (Long) row[1]
+                ));
+        Map<Integer, Long> fullMonths = new LinkedHashMap<>();
+        for(int month=1; month<=12; month++){
+            fullMonths.put(month, months.getOrDefault(month, 0L));
+        }
+
+        return fullMonths;
     }
 }

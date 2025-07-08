@@ -1,6 +1,7 @@
 package vn.minhdat.jobhunter_be.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,19 +24,25 @@ public class DashboardController {
 
     @GetMapping("/dashboard/users")
     public ResponseEntity<?> statisticsUser() {
-        Map<String, Long> result = this.dashboardService.statisticsUser();
+        Map<String, Long> result = this.dashboardService.handleStatisticsUser();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @GetMapping("/dashboard/jobs")
     public ResponseEntity<?> statisticsJob() {
-        Map<String, Long> result = this.dashboardService.statisticsJob();
+        Map<String, Long> result = this.dashboardService.handleStatisticsJob();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @GetMapping("/dashboard/applications")
     public ResponseEntity<?> statisticsApplication() {
-        Map<Status, Long> result = this.dashboardService.statisticsApplication();
+        Map<Status, Long> result = this.dashboardService.handleStatisticsApplication();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/dashboard/applications-year")
+    public ResponseEntity<?> statisticsApplicationByYear(int year) {
+        Map<Integer, Long> result = this.dashboardService.handleStatisticsApplicationByYear(year);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
