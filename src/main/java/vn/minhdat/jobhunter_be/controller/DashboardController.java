@@ -1,13 +1,10 @@
 package vn.minhdat.jobhunter_be.controller;
 
 import com.turkraft.springfilter.boot.Filter;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.minhdat.jobhunter_be.common.Status;

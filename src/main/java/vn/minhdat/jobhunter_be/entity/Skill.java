@@ -38,6 +38,10 @@ public class Skill {
     @ToString.Exclude
     private List<Subscriber> subscribers;
 
+    public Skill(String name) {
+        this.name = name;
+    }
+
     @PrePersist
     public void handleBeforeCreate(){
         this.createdAt = Instant.now();

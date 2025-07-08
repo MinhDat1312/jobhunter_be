@@ -33,6 +33,10 @@ public class Career {
     @ToString.Exclude
     private List<Job> jobs;
 
+    public Career(String name) {
+        this.name = name;
+    }
+
     @PrePersist
     public void handleBeforeCreate(){
         this.createdAt = Instant.now();
