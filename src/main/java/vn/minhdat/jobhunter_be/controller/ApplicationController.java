@@ -108,9 +108,9 @@ public class ApplicationController {
             @Filter Specification<Application> spec, Pageable pageable) {
         List<Long> jobIds = this.jobService.handleGetAllJobIdsByRecruiter();
 
-        Specification<Application> specification = filterSpecificationConverter
-                .convert(filterBuilder.field("job").in(filterBuilder.input(jobIds)).get());
-        Specification<Application> finalSpec = specification.and(spec);
+        Specification<Application> specification = (root, query, cb) ->
+                root.get("job").get("jobId").in(jobIds);
+        Specification<Application> finalSpec = spec.and(specification);
 
         ResultPaginationResponse result = this.applicationService.handleGetAllApplications(finalSpec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(result);
