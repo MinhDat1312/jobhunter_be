@@ -1,5 +1,6 @@
 package vn.minhdat.jobhunter_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
@@ -14,6 +15,7 @@ import vn.minhdat.jobhunter_be.util.annotation.RequireAddressIfRecruiter;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -61,6 +63,15 @@ public abstract class User {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_savedJob",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "job_id")
+    )
+    @JsonIgnore
+    private List<Job> savedJobs;
 
     @PrePersist
     public void handleBeforeCreate(){

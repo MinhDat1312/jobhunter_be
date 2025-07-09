@@ -68,6 +68,11 @@ public class Job {
     @JoinColumn(name = "career_id")
     private Career career;
 
+    @ManyToMany(mappedBy = "savedJobs", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private List<User> users;
+
     @PrePersist
     public void handleBeforeCreate(){
         this.createdAt = Instant.now();

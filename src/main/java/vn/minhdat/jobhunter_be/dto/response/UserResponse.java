@@ -6,10 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.minhdat.jobhunter_be.common.Gender;
+import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.embeddable.Contact;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,9 +27,10 @@ public class UserResponse {
     private String avatar;
     private Gender gender;
     private LocalDate dob;
+    private RoleUser role;
+    private List<SavedJob> savedJobs;
     private Instant createdAt;
     private Instant updatedAt;
-    private RoleUser role;
 
     @Getter
     @Setter
@@ -36,5 +39,14 @@ public class UserResponse {
     public static class RoleUser {
         private long roleId;
         private String name;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SavedJob {
+        private long jobId;
+        private String title;
     }
 }

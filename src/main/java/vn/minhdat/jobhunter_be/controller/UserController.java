@@ -10,9 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.minhdat.jobhunter_be.dto.request.SaveJobRequest;
 import vn.minhdat.jobhunter_be.dto.request.UpdatePasswordRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
+import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.UserService;
@@ -71,6 +73,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body((LoginResponse) result.get("loginResponse"));
+    }
+
+    @PutMapping("/users/saved-jobs")
+    public ResponseEntity<UserResponse> saveJobs(@Valid @RequestBody SaveJobRequest saveJobRequest)
+            throws InvalidException
+    {
+        User user = this.userService.handleGetUserById(saveJobRequest.getUserId());
+        if(user == null) {
+            throw new InvalidException("User not found");
+        }
+
+        UserResponse userResponse = this.userService.handleSaveJobs(saveJobRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
 }

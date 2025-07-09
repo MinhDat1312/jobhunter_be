@@ -94,9 +94,13 @@ public class JobService {
 
     public void handleDeleteJob(long id) {
         Job job = this.handleGetJobById(id);
+
         if(job.getApplications() != null){
             List<Application> applications = this.applicationRepository.findByJob(job);
             this.applicationRepository.deleteAll(applications);
+        }
+        if(job.getUsers() != null){
+            job.getUsers().forEach(user -> {user.getSavedJobs().remove(job);});
         }
 
         this.jobRepository.deleteById(id);

@@ -11,6 +11,6 @@ public class UpdatePasswordRequest {
     private String currentPassword;
     @NotBlank(message = "new password is not empty")
     private String newPassword;
-    @NotBlank(message = " re password is not empty")
+    @NotBlank(message = " re-password is not empty")
     private String rePassword;
 }
