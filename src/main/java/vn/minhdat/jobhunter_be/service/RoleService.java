@@ -9,6 +9,7 @@ import vn.minhdat.jobhunter_be.entity.Permission;
 import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.repository.PermissionRepository;
 import vn.minhdat.jobhunter_be.repository.RoleRepository;
+import vn.minhdat.jobhunter_be.repository.UserRepository;
 
 import java.util.List;
 
@@ -16,10 +17,14 @@ import java.util.List;
 public class RoleService {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final UserRepository userRepository;
 
-    public RoleService(RoleRepository roleRepository, PermissionRepository permissionRepository) {
+    public RoleService(RoleRepository roleRepository, PermissionRepository permissionRepository,
+                       UserRepository userRepository)
+    {
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
+        this.userRepository = userRepository;
     }
 
     public Role handleCreateRole(Role role) {
@@ -49,6 +54,13 @@ public class RoleService {
     }
 
     public void handleDeleteRole(long id) {
+        Role currentRole = this.handleGetRoleById(id);
+        if(currentRole.getUsers() != null){
+            currentRole.getUsers().forEach(user -> {
+                user.setRole(null);
+                this.userRepository.save(user);
+            });
+        }
         this.roleRepository.deleteById(id);
     }
 
