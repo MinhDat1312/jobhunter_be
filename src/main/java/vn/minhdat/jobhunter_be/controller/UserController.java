@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.minhdat.jobhunter_be.dto.request.FollowRecruiterRequest;
 import vn.minhdat.jobhunter_be.dto.request.SaveJobRequest;
 import vn.minhdat.jobhunter_be.dto.request.UpdatePasswordRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
@@ -85,6 +86,19 @@ public class UserController {
         }
 
         UserResponse userResponse = this.userService.handleSaveJobs(saveJobRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+    }
+
+    @PutMapping("/users/followed-recruiters")
+    public ResponseEntity<UserResponse> followRecruiters(@Valid @RequestBody FollowRecruiterRequest followRecruiterRequest)
+            throws InvalidException
+    {
+        User user = this.userService.handleGetUserById(followRecruiterRequest.getUserId());
+        if(user == null) {
+            throw new InvalidException("User not found");
+        }
+
+        UserResponse userResponse = this.userService.handleFollowRecruiters(followRecruiterRequest);
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.minhdat.jobhunter_be.entity.Job;
+import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.Role;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class LoginResponse {
         private String type;
         private Role role;
         private List<Job> savedJobs;
+        private List<Recruiter> followedRecruiters;
     }
 
     @Getter

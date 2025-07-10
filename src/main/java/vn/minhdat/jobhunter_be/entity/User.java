@@ -66,12 +66,21 @@ public abstract class User {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_savedJob",
+            name = "user_saved_job",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "job_id")
     )
     @JsonIgnore
     private List<Job> savedJobs;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_followed_recruiter",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "recruiter_id")
+    )
+    @JsonIgnore
+    private List<Recruiter> followedRecruiters;
 
     @PrePersist
     public void handleBeforeCreate(){

@@ -24,7 +24,8 @@ public class RecruiterService {
     private final String HR = "HR";
 
     public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository,
-                            RoleService roleService) {
+                            RoleService roleService
+    ) {
         this.recruiterRepository = recruiterRepository;
         this.jobRepository = jobRepository;
         this.roleService = roleService;
@@ -48,6 +49,11 @@ public class RecruiterService {
             if(recruiter.getJobs() != null){
                 List<Job> jobs = this.jobRepository.findByRecruiter(recruiter);
                 this.jobRepository.deleteAll(jobs);
+            }
+            if(recruiter.getUsers() != null){
+                recruiter.getUsers().forEach(user -> {
+                    user.getFollowedRecruiters().remove(recruiter);
+                });
             }
             this.recruiterRepository.deleteById(id);
         }

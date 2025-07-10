@@ -31,16 +31,15 @@ public class ApplicationController {
     private final ApplicationService applicationService;
     private final JobService jobService;
     private final FilterSpecificationConverter filterSpecificationConverter;
-    private final FilterBuilder filterBuilder;
     private final FilterParser filterParser;
 
     public ApplicationController(ApplicationService applicationService, JobService jobService,
                                  FilterSpecificationConverter filterSpecificationConverter,
-                                 FilterBuilder filterBuilder, FilterParser filterParser) {
+                                 FilterParser filterParser
+    ) {
         this.applicationService = applicationService;
         this.jobService = jobService;
         this.filterSpecificationConverter = filterSpecificationConverter;
-        this.filterBuilder = filterBuilder;
         this.filterParser = filterParser;
     }
 

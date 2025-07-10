@@ -22,4 +22,9 @@ public class Recruiter extends User{
     @JsonIgnore
     @ToString.Exclude
     private List<Job> jobs;
+
+    @ManyToMany(mappedBy = "followedRecruiters", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private List<User> users;
 }

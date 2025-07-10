@@ -6,14 +6,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.common.Role;
+import vn.minhdat.jobhunter_be.dto.request.FollowRecruiterRequest;
 import vn.minhdat.jobhunter_be.dto.request.SaveJobRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.entity.Job;
+import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
+import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 import vn.minhdat.jobhunter_be.repository.UserRepository;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
@@ -27,14 +30,17 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
+    private final RecruiterRepository recruiterRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityUtil securityUtil;
 
     public UserService(UserRepository userRepository, JobRepository jobRepository,
+                       RecruiterRepository recruiterRepository,
                        PasswordEncoder passwordEncoder, SecurityUtil securityUtil
     ) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
+        this.recruiterRepository = recruiterRepository;
         this.passwordEncoder = passwordEncoder;
         this.securityUtil = securityUtil;
     }
@@ -106,7 +112,7 @@ public class UserService {
                     res.getUserId(), res.getContact().getEmail(),
                     res.getFullName(), res.getUsername(), res.getAvatar(),
                     res instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
-                    res.getRole(), res.getSavedJobs()
+                    res.getRole(), res.getSavedJobs(), res.getFollowedRecruiters()
             );
             loginResponse.setUser(userLogin);
             String accessToken = this.securityUtil.createAccessToken(currentEmail, loginResponse);
@@ -131,6 +137,22 @@ public class UserService {
             List<Long> jobIds = saveJobRequest.getSavedJobs().stream().map(Job::getJobId).toList();
             List<Job> savedJobs = this.jobRepository.findByJobIdIn(jobIds);
             user.setSavedJobs(savedJobs);
+            this.userRepository.save(user);
+
+            return this.convertToUserResponse(user);
+        }
+
+        return null;
+    }
+
+    public UserResponse handleFollowRecruiters(FollowRecruiterRequest followRecruiterRequest) {
+        User user = this.userRepository.findById(followRecruiterRequest.getUserId()).orElse(null);
+
+        if(user != null) {
+            List<Long> recruiterIds = followRecruiterRequest.getFollowedRecruiters()
+                    .stream().map(Recruiter::getUserId).toList();
+            List<Recruiter> followedRecruiters = this.recruiterRepository.findByUserIdIn(recruiterIds);
+            user.setFollowedRecruiters(followedRecruiters);
             this.userRepository.save(user);
 
             return this.convertToUserResponse(user);
@@ -165,6 +187,15 @@ public class UserService {
                 savedJobs.add(new UserResponse.SavedJob(savedJob.getJobId(), savedJob.getTitle()));
             });
             userResponse.setSavedJobs(savedJobs);
+        }
+        if(user.getFollowedRecruiters() != null) {
+            List<UserResponse.FollowedRecruiter> followedRecruiters = new ArrayList<>();
+            user.getFollowedRecruiters().forEach(followedRecruiter -> {
+                followedRecruiters.add(new UserResponse.FollowedRecruiter(
+                        followedRecruiter.getUserId(), followedRecruiter.getFullName()
+                ));
+            });
+            userResponse.setFollowedRecruiters(followedRecruiters);
         }
 
         return userResponse;

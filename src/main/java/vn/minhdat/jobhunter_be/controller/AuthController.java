@@ -68,7 +68,7 @@ public class AuthController {
                     currentUser.getUserId(), currentUser.getContact().getEmail(),
                     currentUser.getFullName(), currentUser.getUsername(), currentUser.getAvatar(),
                     currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
-                    currentUser.getRole(), currentUser.getSavedJobs()
+                    currentUser.getRole(), currentUser.getSavedJobs(), currentUser.getFollowedRecruiters()
             );
             loginResponse.setUser(userLogin);
         }
@@ -140,6 +140,7 @@ public class AuthController {
             currentUserLogin.setType(currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue());
             currentUserLogin.setRole(currentUser.getRole());
             currentUserLogin.setSavedJobs(currentUser.getSavedJobs());
+            currentUserLogin.setFollowedRecruiters(currentUser.getFollowedRecruiters());
 
             userGetAccount.setUser(currentUserLogin);
         }
