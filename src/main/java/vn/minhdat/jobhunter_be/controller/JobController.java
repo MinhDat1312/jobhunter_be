@@ -13,6 +13,7 @@ import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.JobService;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 @RestController
@@ -75,6 +76,12 @@ public class JobController {
             @Filter Specification<Job> spec, Pageable pageable
     ) {
         ResultPaginationResponse result = this.jobService.handleGetAllJobs(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/jobs/recruiters")
+    public ResponseEntity<Map<Long, Long>> countJobByRecruiter() {
+        Map<Long, Long> result = this.jobService.handleCountJobByRecruiter();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

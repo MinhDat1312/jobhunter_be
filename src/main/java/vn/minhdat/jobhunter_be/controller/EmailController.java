@@ -17,8 +17,8 @@ public class EmailController {
     }
 
     @GetMapping("/email")
-    @Scheduled(cron = "*/10 * * * * *")
-    @Transactional
+//    @Scheduled(cron = "*/10 * * * * *")
+//    @Transactional
     public void sendEmail(){
         this.subscriberService.handleSendSubscribersEmailJobs();
         this.subscriberService.handleSendFollowersEmailJobs();

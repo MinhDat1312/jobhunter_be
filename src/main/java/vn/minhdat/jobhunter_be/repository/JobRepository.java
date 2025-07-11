@@ -2,6 +2,7 @@ package vn.minhdat.jobhunter_be.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.minhdat.jobhunter_be.entity.Career;
 import vn.minhdat.jobhunter_be.entity.Job;
@@ -17,4 +18,7 @@ public interface JobRepository extends JpaRepository<Job, Long>, JpaSpecificatio
     List<Job> findByCareer(Career career);
     List<Job> findBySkillsIn(List<Skill> skills);
     List<Job> findByJobIdIn(List<Long> jobIds);
+
+    @Query("SELECT j.recruiter.userId, COUNT(j) FROM Job j GROUP BY j.recruiter.userId")
+    List<Object[]> countJobs();
 }

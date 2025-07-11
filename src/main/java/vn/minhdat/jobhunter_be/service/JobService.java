@@ -10,8 +10,8 @@ import vn.minhdat.jobhunter_be.entity.*;
 import vn.minhdat.jobhunter_be.repository.*;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class JobService {
@@ -22,7 +22,8 @@ public class JobService {
     private final UserRepository userRepository;
 
     public JobService(JobRepository jobRepository, SkillRepository skillRepository, CareerRepository careerRepository,
-                      ApplicationRepository applicationRepository, UserRepository userRepository) {
+                      ApplicationRepository applicationRepository, UserRepository userRepository
+    ) {
         this.jobRepository = jobRepository;
         this.skillRepository = skillRepository;
         this.careerRepository = careerRepository;
@@ -125,6 +126,16 @@ public class JobService {
         meta.setTotal(page.getTotalElements());
 
         return new ResultPaginationResponse(meta, page.getContent());
+    }
+
+    public Map<Long, Long> handleCountJobByRecruiter(){
+        return this.jobRepository.countJobs()
+                .stream().collect(
+                        Collectors.toMap(
+                                row-> (Long)row[0],
+                                row-> (Long)row[1]
+                        )
+                );
     }
 
     public JobResponse convertToJobResponse(Job job) {
