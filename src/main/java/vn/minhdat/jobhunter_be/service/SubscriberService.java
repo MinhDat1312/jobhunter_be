@@ -6,13 +6,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.dto.response.EmailJobResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
-import vn.minhdat.jobhunter_be.entity.Job;
-import vn.minhdat.jobhunter_be.entity.Skill;
-import vn.minhdat.jobhunter_be.entity.Subscriber;
+import vn.minhdat.jobhunter_be.entity.*;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.SkillRepository;
 import vn.minhdat.jobhunter_be.repository.SubscriberRepository;
+import vn.minhdat.jobhunter_be.repository.UserRepository;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,13 +24,17 @@ public class SubscriberService {
     private final SubscriberRepository subscriberRepository;
     private final SkillRepository skillRepository;
     private final JobRepository jobRepository;
+    private final UserRepository userRepository;
     private final EmailService emailService;
 
     public SubscriberService(SubscriberRepository subscriberRepository, SkillRepository skillRepository,
-                             JobRepository jobRepository, EmailService emailService) {
+                             JobRepository jobRepository, UserRepository userRepository,
+                             EmailService emailService
+    ) {
         this.subscriberRepository = subscriberRepository;
         this.skillRepository = skillRepository;
         this.jobRepository = jobRepository;
+        this.userRepository = userRepository;
         this.emailService = emailService;
     }
 
@@ -107,6 +113,47 @@ public class SubscriberService {
                 }
             }
         }
+    }
+
+    public void handleSendFollowersEmailJobs() {
+        List<User> users = this.userRepository.findAll();
+        Instant sevenDaysAgo = Instant.now().minus(7, ChronoUnit.DAYS);
+        if(users.isEmpty()) return;
+
+        for(User user : users) {
+            List<Recruiter> recruiters = user.getFollowedRecruiters();
+            if(recruiters == null || recruiters.isEmpty()) continue;
+
+            List<Job> allRecentJobs = new ArrayList<>();
+
+            for(Recruiter recruiter : recruiters) {
+                List<Job> jobs = this.jobRepository.findByRecruiter(recruiter);
+                if(jobs == null || jobs.isEmpty()) continue;
+
+                List<Job> recentJobs = jobs.stream().filter(job -> isRecentJob(job, sevenDaysAgo)).toList();
+                allRecentJobs.addAll(recentJobs);
+            }
+
+            if(!allRecentJobs.isEmpty()) {
+                List<EmailJobResponse> arr = allRecentJobs.stream().map(
+                        this::convertJobToSendEmail)
+                        .collect(Collectors.toList());
+                this.emailService.handleSendEmailWithTemplate(
+                        user.getContact().getEmail(),
+                        "Cơ hội việc làm hot đang chờ đón bạn, khám phá ngay",
+                        "job",
+                        user.getFullName(),
+                        arr);
+            }
+        }
+    }
+
+    private boolean isRecentJob(Job job, Instant sevenDaysAgo) {
+        Instant updatedAt = job.getUpdatedAt();
+        Instant createdAt = job.getCreatedAt();
+
+        return (updatedAt != null && updatedAt.isAfter(sevenDaysAgo)) ||
+                (updatedAt == null && createdAt != null && createdAt.isAfter(sevenDaysAgo));
     }
 
     public EmailJobResponse convertJobToSendEmail(Job job) {

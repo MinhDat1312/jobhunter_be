@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.minhdat.jobhunter_be.service.EmailService;
 import vn.minhdat.jobhunter_be.service.SubscriberService;
 
 @RestController
@@ -18,9 +17,10 @@ public class EmailController {
     }
 
     @GetMapping("/email")
-//    @Scheduled(cron = "*/10 * * * * *")
-//    @Transactional
+    @Scheduled(cron = "*/10 * * * * *")
+    @Transactional
     public void sendEmail(){
         this.subscriberService.handleSendSubscribersEmailJobs();
+        this.subscriberService.handleSendFollowersEmailJobs();
     }
 }
