@@ -246,7 +246,7 @@ Database được thiết kế với các mối quan hệ:
 
 ## 📞 Liên hệ
 
-- Email: nguyenthangminhdat45392@gmail.com
-- GitHub: [@MinhDat1312](https://github.com/MinhDat1312)
+- 📧 Email: [nguyenthangdat84@gmail.com](mailto:nguyenthangdat84@gmail.com)
+- 🐙 GitHub: [github.com/MinhDat1312](https://github.com/MinhDat1312)
 
 ---
