@@ -223,7 +223,7 @@ Database được thiết kế với các mối quan hệ:
 
 - JWT (JSON Web Token) cho xác thực
 - Access token: 15 phút
-- Refresh token: 100 ngày
+- Refresh token: 7 ngày
 
 ### Authorization
 
@@ -237,14 +237,6 @@ Database được thiết kế với các mối quan hệ:
 - CORS configuration
 - Input validation với Bean Validation
 
-## 🤝 Đóng góp
-
-1. Fork repository
-2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add some amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Tạo Pull Request
-
 ### Coding Standards
 
 - Sử dụng Java 21 features
@@ -252,19 +244,9 @@ Database được thiết kế với các mối quan hệ:
 - Viết unit tests cho các service methods
 - Comment code rõ ràng bằng tiếng Việt hoặc tiếng Anh
 
-## 📝 License
-
-Dự án này được phát hành dưới [MIT License](LICENSE).
-
-## 👥 Tác giả
-
-- **Minh Đạt** - [MinhDat1312](https://github.com/MinhDat1312)
-
 ## 📞 Liên hệ
 
 - Email: nguyenthangminhdat45392@gmail.com
 - GitHub: [@MinhDat1312](https://github.com/MinhDat1312)
 
 ---
-
-**Lưu ý**: Đây là project học tập/demo. Không sử dụng trong môi trường production mà không có các biện pháp bảo mật bổ sung.
