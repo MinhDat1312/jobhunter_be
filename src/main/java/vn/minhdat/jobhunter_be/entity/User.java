@@ -71,6 +71,7 @@ public abstract class User {
             inverseJoinColumns = @JoinColumn(name = "job_id")
     )
     @JsonIgnore
+    @ToString.Exclude
     private List<Job> savedJobs;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -80,7 +81,24 @@ public abstract class User {
             inverseJoinColumns = @JoinColumn(name = "recruiter_id")
     )
     @JsonIgnore
+    @ToString.Exclude
     private List<Recruiter> followedRecruiters;
+
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Blog> blogs;
+
+    @OneToMany(mappedBy = "commentedBy", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "actor", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Notification> actorNotifications;
+
+    @OneToMany(mappedBy = "recipient", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Notification> recipientNotifications;
 
     @PrePersist
     public void handleBeforeCreate(){

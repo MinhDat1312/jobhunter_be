@@ -1,0 +1,14 @@
+package vn.minhdat.jobhunter_be.common;
+
+import lombok.Getter;
+
+@Getter
+public enum NotificationType {
+    LIKE("Thích"), COMMENT("Bình luận"), REPLY("Trả lời");
+
+    private final String value;
+
+    NotificationType(String value) {
+        this.value = value;
+    }
+}
