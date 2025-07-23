@@ -8,9 +8,12 @@ import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Blog;
 import vn.minhdat.jobhunter_be.entity.Comment;
 import vn.minhdat.jobhunter_be.entity.Notification;
+import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.repository.BlogRepository;
 import vn.minhdat.jobhunter_be.repository.CommentRepository;
 import vn.minhdat.jobhunter_be.repository.NotificationRepository;
+import vn.minhdat.jobhunter_be.repository.UserRepository;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 import java.util.List;
 
@@ -19,16 +22,21 @@ public class BlogService {
     private final BlogRepository blogRepository;
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     public BlogService(BlogRepository blogRepository, CommentRepository commentRepository,
-                       NotificationRepository notificationRepository
+                       NotificationRepository notificationRepository, UserRepository userRepository
     ) {
         this.blogRepository = blogRepository;
         this.commentRepository = commentRepository;
         this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
     }
 
     public Blog handleCreateBlog(Blog blog) {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+        User currentUser = this.userRepository.findByContact_Email(email);
+        blog.setAuthor(currentUser);
         return this.blogRepository.save(blog);
     }
 

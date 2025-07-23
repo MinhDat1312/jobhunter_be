@@ -1,5 +1,6 @@
 package vn.minhdat.jobhunter_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -44,10 +45,12 @@ public class Blog {
 
     @OneToMany(mappedBy = "blog", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "blog", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Notification> notifications;
 
     @PrePersist
