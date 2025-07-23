@@ -12,6 +12,7 @@ import vn.minhdat.jobhunter_be.entity.Application;
 import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
+import vn.minhdat.jobhunter_be.repository.CommentRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +21,16 @@ import java.util.Optional;
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
+    private final CommentRepository commentRepository;
     private final RoleService roleService;
     private final String APPLICANT = "APPLICANT";
 
     public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository,
-                            RoleService roleService) {
+                            CommentRepository commentRepository, RoleService roleService
+    ) {
         this.applicantRepository = applicantRepository;
         this.applicationRepository = applicationRepository;
+        this.commentRepository = commentRepository;
         this.roleService = roleService;
     }
 
@@ -46,6 +50,9 @@ public class ApplicantService {
         if(applicant.getApplications() != null){
             List<Application> applications = this.applicationRepository.findByApplicant(applicant);
             this.applicationRepository.deleteAll(applications);
+        }
+        if(applicant.getComments() != null){
+            this.commentRepository.deleteAll(applicant.getComments());
         }
 
         this.applicantRepository.deleteById(id);

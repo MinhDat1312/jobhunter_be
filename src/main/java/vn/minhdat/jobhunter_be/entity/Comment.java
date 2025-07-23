@@ -1,5 +1,6 @@
 package vn.minhdat.jobhunter_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -42,18 +43,22 @@ public class Comment {
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Comment> children;
 
     @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Notification> commentNotifications;
 
     @OneToMany(mappedBy = "reply", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Notification> replyNotifications;
 
     @OneToMany(mappedBy = "repliedOnComment", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Notification> repliedOnCommentNotifications;
 
     @PrePersist

@@ -10,6 +10,8 @@ import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.Role;
+import vn.minhdat.jobhunter_be.repository.BlogRepository;
+import vn.minhdat.jobhunter_be.repository.CommentRepository;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 
@@ -20,14 +22,19 @@ import java.util.Optional;
 public class RecruiterService {
     private final RecruiterRepository recruiterRepository;
     private final JobRepository jobRepository;
+    private final CommentRepository commentRepository;
+    private final BlogRepository blogRepository;
     private final RoleService roleService;
     private final String HR = "HR";
 
     public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository,
-                            RoleService roleService
+                            CommentRepository commentRepository, RoleService roleService,
+                            BlogRepository blogRepository
     ) {
         this.recruiterRepository = recruiterRepository;
         this.jobRepository = jobRepository;
+        this.commentRepository = commentRepository;
+        this.blogRepository = blogRepository;
         this.roleService = roleService;
     }
 
@@ -54,6 +61,12 @@ public class RecruiterService {
                 recruiter.getUsers().forEach(user -> {
                     user.getFollowedRecruiters().remove(recruiter);
                 });
+            }
+            if(recruiter.getBlogs() != null){
+                this.blogRepository.deleteAll(recruiter.getBlogs());
+            }
+            if(recruiter.getComments() != null){
+                this.commentRepository.deleteAll(recruiter.getComments());
             }
             this.recruiterRepository.deleteById(id);
         }

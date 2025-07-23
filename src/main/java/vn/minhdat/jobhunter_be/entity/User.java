@@ -86,18 +86,22 @@ public abstract class User {
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Blog> blogs;
 
     @OneToMany(mappedBy = "commentedBy", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "actor", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Notification> actorNotifications;
 
     @OneToMany(mappedBy = "recipient", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Notification> recipientNotifications;
 
     @PrePersist
