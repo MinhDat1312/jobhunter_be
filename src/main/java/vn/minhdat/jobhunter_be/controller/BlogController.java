@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.minhdat.jobhunter_be.dto.request.LikeBlogRequest;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Blog;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
@@ -64,6 +65,12 @@ public class BlogController {
             @Filter Specification<Blog> spec, Pageable pageable
     ) {
         ResultPaginationResponse res = this.blogService.handleGetAllBlogs(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
+    @PutMapping("/blogs/liked-blogs")
+    public ResponseEntity<Blog> likeBlogs(@Valid @RequestBody LikeBlogRequest likeBlogRequest) {
+        Blog res = this.blogService.handleLikeBlog(likeBlogRequest);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }

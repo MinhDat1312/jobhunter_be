@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.common.NotificationType;
+import vn.minhdat.jobhunter_be.dto.request.LikeBlogRequest;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Blog;
 import vn.minhdat.jobhunter_be.entity.Comment;
@@ -23,14 +25,17 @@ public class BlogService {
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public BlogService(BlogRepository blogRepository, CommentRepository commentRepository,
-                       NotificationRepository notificationRepository, UserRepository userRepository
+                       NotificationRepository notificationRepository, UserRepository userRepository,
+                       NotificationService notificationService
     ) {
         this.blogRepository = blogRepository;
         this.commentRepository = commentRepository;
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     public Blog handleCreateBlog(Blog blog) {
@@ -87,5 +92,29 @@ public class BlogService {
         meta.setTotal(page.getTotalElements());
 
         return new ResultPaginationResponse(meta, page.getContent());
+    }
+
+    public Blog handleLikeBlog(LikeBlogRequest likeBlogRequest) {
+        int incrementVal = likeBlogRequest.isLiked() ? 1 : -1;
+        Blog blog = this.handleGetBlogById(likeBlogRequest.getBlog().getBlogId());
+        long newTotalLikes = blog.getActivity().getTotalLikes() + incrementVal;
+        blog.getActivity().setTotalLikes(Math.max(newTotalLikes, 0));
+        Blog updatedBlog = this.blogRepository.save(blog);
+
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+        User currentUser = this.userRepository.findByContact_Email(email);
+
+        if(likeBlogRequest.isLiked()) {
+            Notification notification = new Notification();
+            notification.setType(NotificationType.LIKE);
+            notification.setSeen(false);
+            notification.setBlog(updatedBlog);
+            notification.setActor(currentUser);
+            notification.setRecipient(blog.getAuthor());
+
+            this.notificationService.handleCreateNotification(notification);
+        }
+
+        return updatedBlog;
     }
 }
