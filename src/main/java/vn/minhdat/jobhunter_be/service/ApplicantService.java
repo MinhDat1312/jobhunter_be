@@ -9,10 +9,12 @@ import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.entity.Application;
+import vn.minhdat.jobhunter_be.entity.Notification;
 import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 import vn.minhdat.jobhunter_be.repository.CommentRepository;
+import vn.minhdat.jobhunter_be.repository.NotificationRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,15 +24,18 @@ public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
     private final CommentRepository commentRepository;
+    private final NotificationRepository notificationRepository;
     private final RoleService roleService;
     private final String APPLICANT = "APPLICANT";
 
     public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository,
-                            CommentRepository commentRepository, RoleService roleService
+                            CommentRepository commentRepository, NotificationRepository notificationRepository,
+                            RoleService roleService
     ) {
         this.applicantRepository = applicantRepository;
         this.applicationRepository = applicationRepository;
         this.commentRepository = commentRepository;
+        this.notificationRepository = notificationRepository;
         this.roleService = roleService;
     }
 
@@ -53,6 +58,14 @@ public class ApplicantService {
         }
         if(applicant.getComments() != null){
             this.commentRepository.deleteAll(applicant.getComments());
+        }
+        if(applicant.getActorNotifications() != null){
+            List<Notification> notifications = applicant.getActorNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
+        if(applicant.getRecipientNotifications() != null){
+            List<Notification> notifications = applicant.getRecipientNotifications();
+            this.notificationRepository.deleteAll(notifications);
         }
 
         this.applicantRepository.deleteById(id);

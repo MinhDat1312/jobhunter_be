@@ -10,10 +10,7 @@ import vn.minhdat.jobhunter_be.dto.response.UserResponse;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.Role;
-import vn.minhdat.jobhunter_be.repository.BlogRepository;
-import vn.minhdat.jobhunter_be.repository.CommentRepository;
-import vn.minhdat.jobhunter_be.repository.JobRepository;
-import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
+import vn.minhdat.jobhunter_be.repository.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,17 +21,19 @@ public class RecruiterService {
     private final JobRepository jobRepository;
     private final CommentRepository commentRepository;
     private final BlogRepository blogRepository;
+    private final NotificationRepository notificationRepository;
     private final RoleService roleService;
     private final String HR = "HR";
 
     public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository,
                             CommentRepository commentRepository, RoleService roleService,
-                            BlogRepository blogRepository
+                            BlogRepository blogRepository, NotificationRepository notificationRepository
     ) {
         this.recruiterRepository = recruiterRepository;
         this.jobRepository = jobRepository;
         this.commentRepository = commentRepository;
         this.blogRepository = blogRepository;
+        this.notificationRepository = notificationRepository;
         this.roleService = roleService;
     }
 
@@ -68,6 +67,13 @@ public class RecruiterService {
             if(recruiter.getComments() != null){
                 this.commentRepository.deleteAll(recruiter.getComments());
             }
+            if(recruiter.getActorNotifications() != null){
+                this.notificationRepository.deleteAll(recruiter.getActorNotifications());
+            }
+            if(recruiter.getRecipientNotifications() != null){
+                this.notificationRepository.deleteAll(recruiter.getRecipientNotifications());
+            }
+
             this.recruiterRepository.deleteById(id);
         }
     }

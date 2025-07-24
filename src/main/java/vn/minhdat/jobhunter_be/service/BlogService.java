@@ -25,17 +25,14 @@ public class BlogService {
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
 
     public BlogService(BlogRepository blogRepository, CommentRepository commentRepository,
-                       NotificationRepository notificationRepository, UserRepository userRepository,
-                       NotificationService notificationService
+                       NotificationRepository notificationRepository, UserRepository userRepository
     ) {
         this.blogRepository = blogRepository;
         this.commentRepository = commentRepository;
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
-        this.notificationService = notificationService;
     }
 
     public Blog handleCreateBlog(Blog blog) {
@@ -94,6 +91,15 @@ public class BlogService {
         return new ResultPaginationResponse(meta, page.getContent());
     }
 
+    public void handleIncrementTotalValue(Comment comment) {
+        Blog blog = comment.getBlog();
+        blog.getActivity().setTotalComments(blog.getActivity().getTotalComments() + 1);
+        if(!comment.isReply()) {
+            blog.getActivity().setTotalParentComments(blog.getActivity().getTotalParentComments() + 1);
+        }
+        this.blogRepository.save(blog);
+    }
+
     public Blog handleLikeBlog(LikeBlogRequest likeBlogRequest) {
         int incrementVal = likeBlogRequest.isLiked() ? 1 : -1;
         Blog blog = this.handleGetBlogById(likeBlogRequest.getBlog().getBlogId());
@@ -112,7 +118,7 @@ public class BlogService {
             notification.setActor(currentUser);
             notification.setRecipient(blog.getAuthor());
 
-            this.notificationService.handleCreateNotification(notification);
+            this.notificationRepository.save(notification);
         }
 
         return updatedBlog;

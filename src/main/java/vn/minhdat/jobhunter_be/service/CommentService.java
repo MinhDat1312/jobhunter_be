@@ -4,27 +4,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.minhdat.jobhunter_be.common.NotificationType;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Blog;
 import vn.minhdat.jobhunter_be.entity.Comment;
+import vn.minhdat.jobhunter_be.entity.Notification;
 import vn.minhdat.jobhunter_be.entity.User;
-import vn.minhdat.jobhunter_be.repository.BlogRepository;
 import vn.minhdat.jobhunter_be.repository.CommentRepository;
+import vn.minhdat.jobhunter_be.repository.NotificationRepository;
 import vn.minhdat.jobhunter_be.repository.UserRepository;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
+
+import java.util.List;
 
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final BlogRepository blogRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final BlogService blogService;
 
-    public CommentService(CommentRepository commentRepository, BlogRepository blogRepository,
-                          UserRepository userRepository
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository,
+                          BlogService blogService, NotificationRepository notificationRepository
     ) {
         this.commentRepository = commentRepository;
-        this.blogRepository = blogRepository;
         this.userRepository = userRepository;
+        this.blogService = blogService;
+        this.notificationRepository = notificationRepository;
     }
 
     public Comment handleCreateComment(Comment comment) {
@@ -32,7 +38,7 @@ public class CommentService {
         User currentUser = this.userRepository.findByContact_Email(email);
         comment.setCommentedBy(currentUser);
         if(comment.getBlog() != null) {
-            Blog blog = this.blogRepository.findById(comment.getBlog().getBlogId()).orElse(null);
+            Blog blog = this.blogService.handleGetBlogById(comment.getBlog().getBlogId());
             if(blog != null) {
                 comment.setBlog(blog);
             }
@@ -48,12 +54,22 @@ public class CommentService {
         }
         Comment newComment = this.commentRepository.save(comment);
 
-        Blog blog = newComment.getBlog();
-        blog.getActivity().setTotalComments(blog.getActivity().getTotalComments() + 1);
-        if(!newComment.isReply()) {
-            blog.getActivity().setTotalParentComments(blog.getActivity().getTotalParentComments() + 1);
+        this.blogService.handleIncrementTotalValue(newComment);
+
+        Notification notification = new Notification();
+        notification.setSeen(false);
+        notification.setBlog(newComment.getBlog());
+        notification.setActor(currentUser);
+        notification.setRecipient(newComment.getBlog().getAuthor());
+        if(newComment.getParent() != null) {
+            notification.setType(NotificationType.REPLY);
+            notification.setReply(newComment);
+            notification.setRepliedOnComment(newComment.getParent());
+        } else {
+            notification.setType(NotificationType.COMMENT);
+            notification.setComment(newComment);
         }
-        this.blogRepository.save(blog);
+        this.notificationRepository.save(notification);
 
         return newComment;
     }
@@ -75,8 +91,7 @@ public class CommentService {
         if(!comment.isReply()) {
             blog.getActivity().setTotalParentComments(blog.getActivity().getTotalParentComments() - 1);
         }
-
-        this.blogRepository.save(blog);
+        this.blogService.handleUpdateBlog(blog);
     }
 
     private int deleteRecursively(Comment comment) {
@@ -86,7 +101,21 @@ public class CommentService {
                 count += deleteRecursively(child);
             }
         }
+
+        if(comment.getCommentNotifications() != null) {
+            List<Notification> notifications = comment.getCommentNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
+        if(comment.getReplyNotifications() != null) {
+            List<Notification> notifications = comment.getReplyNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
+        if(comment.getRepliedOnCommentNotifications() != null) {
+            List<Notification> notifications = comment.getRepliedOnCommentNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
         this.commentRepository.delete(comment);
+
         return count;
     }
 
