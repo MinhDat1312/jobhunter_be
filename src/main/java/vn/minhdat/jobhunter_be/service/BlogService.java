@@ -65,7 +65,7 @@ public class BlogService {
 
         if(blog.getComments() != null) {
             List<Comment> comments = blog.getComments();
-            this.commentRepository.deleteAll(comments);
+            comments.forEach(this::deleteRecursively);
         }
         if(blog.getNotifications() != null) {
             List<Notification> notifications = blog.getNotifications();
@@ -73,6 +73,29 @@ public class BlogService {
         }
 
         this.blogRepository.delete(blog);
+    }
+
+    private void deleteRecursively(Comment comment) {
+        if (comment.getChildren() != null) {
+            for (Comment child : comment.getChildren()) {
+                deleteRecursively(child);
+            }
+        }
+
+        if(comment.getCommentNotifications() != null) {
+            List<Notification> notifications = comment.getCommentNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
+        if(comment.getReplyNotifications() != null) {
+            List<Notification> notifications = comment.getReplyNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
+        if(comment.getRepliedOnCommentNotifications() != null) {
+            List<Notification> notifications = comment.getRepliedOnCommentNotifications();
+            this.notificationRepository.deleteAll(notifications);
+        }
+
+        this.commentRepository.delete(comment);
     }
 
     public Blog handleGetBlogById(long id) {
