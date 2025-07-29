@@ -27,7 +27,7 @@ public class FileUploadUtil {
             throw new InvalidException("Max file size is 2MB");
         }
 
-        final String fileName = file.getOriginalFilename();
+        final String fileName = file.getOriginalFilename().replaceAll("\\s+", "_");
         if (!isAllowedExtension(fileName, pattern)) {
             throw new InvalidException("Only jpg, jpeg, png, gif, bmp, pdf, doc, docx files are allowed");
         }
