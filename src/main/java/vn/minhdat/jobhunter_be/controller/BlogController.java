@@ -13,6 +13,7 @@ import vn.minhdat.jobhunter_be.entity.Blog;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.BlogService;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
@@ -71,6 +72,12 @@ public class BlogController {
     @PutMapping("/blogs/liked-blogs")
     public ResponseEntity<Blog> likeBlogs(@Valid @RequestBody LikeBlogRequest likeBlogRequest) {
         Blog res = this.blogService.handleLikeBlog(likeBlogRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
+    @GetMapping("/blogs/tags")
+    public ResponseEntity<List<String>> getAllTags(String keyword) {
+        List<String> res = this.blogService.handleGetAllTags(keyword);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }

@@ -146,4 +146,8 @@ public class BlogService {
 
         return updatedBlog;
     }
+
+    public List<String> handleGetAllTags(String keyword) {
+        return this.blogRepository.findAllTags(keyword);
+    }
 }
