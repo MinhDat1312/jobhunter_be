@@ -112,7 +112,8 @@ public class UserService {
                     res.getUserId(), res.getContact().getEmail(),
                     res.getFullName(), res.getUsername(), res.getAvatar(),
                     res instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
-                    res.getRole(), res.getSavedJobs(), res.getFollowedRecruiters()
+                    res.getRole(), res.getSavedJobs(), res.getFollowedRecruiters(),
+                    res.getActorNotifications()
             );
             loginResponse.setUser(userLogin);
             String accessToken = this.securityUtil.createAccessToken(currentEmail, loginResponse);

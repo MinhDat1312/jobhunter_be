@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.minhdat.jobhunter_be.entity.Job;
+import vn.minhdat.jobhunter_be.entity.Notification;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.Role;
 
@@ -34,6 +35,7 @@ public class LoginResponse {
         private Role role;
         private List<Job> savedJobs;
         private List<Recruiter> followedRecruiters;
+        private List<Notification> actorNotifications;
     }
 
     @Getter
