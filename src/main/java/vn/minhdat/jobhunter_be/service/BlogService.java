@@ -124,7 +124,7 @@ public class BlogService {
         this.blogRepository.save(blog);
     }
 
-    public Blog handleLikeBlog(LikeBlogRequest likeBlogRequest) {
+    public List<Notification> handleLikeBlog(LikeBlogRequest likeBlogRequest) {
         int incrementVal = likeBlogRequest.isLiked() ? 1 : -1;
         Blog blog = this.handleGetBlogById(likeBlogRequest.getBlog().getBlogId());
         long newTotalLikes = blog.getActivity().getTotalLikes() + incrementVal;
@@ -150,7 +150,7 @@ public class BlogService {
             optNotification.ifPresent(this.notificationRepository :: delete);
         }
 
-        return updatedBlog;
+        return currentUser.getActorNotifications();
     }
 
     public List<String> handleGetAllTags(String keyword) {

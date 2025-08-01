@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.request.LikeBlogRequest;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.entity.Blog;
+import vn.minhdat.jobhunter_be.entity.Notification;
 import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.service.BlogService;
 
@@ -70,8 +71,8 @@ public class BlogController {
     }
 
     @PutMapping("/blogs/liked-blogs")
-    public ResponseEntity<Blog> likeBlogs(@Valid @RequestBody LikeBlogRequest likeBlogRequest) {
-        Blog res = this.blogService.handleLikeBlog(likeBlogRequest);
+    public ResponseEntity<List<Notification>> likeBlogs(@Valid @RequestBody LikeBlogRequest likeBlogRequest) {
+        List<Notification> res = this.blogService.handleLikeBlog(likeBlogRequest);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
