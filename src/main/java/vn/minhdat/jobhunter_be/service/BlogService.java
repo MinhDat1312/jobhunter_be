@@ -18,6 +18,7 @@ import vn.minhdat.jobhunter_be.repository.UserRepository;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BlogService {
@@ -142,6 +143,11 @@ public class BlogService {
             notification.setRecipient(blog.getAuthor());
 
             this.notificationRepository.save(notification);
+        } else {
+            Optional<Notification> optNotification = this.notificationRepository.findByTypeAndActorAndBlogAndRecipient(
+                    NotificationType.LIKE, currentUser, updatedBlog,  blog.getAuthor()
+            );
+            optNotification.ifPresent(this.notificationRepository :: delete);
         }
 
         return updatedBlog;
