@@ -77,8 +77,8 @@ public class BlogController {
     }
 
     @GetMapping("/blogs/tags")
-    public ResponseEntity<List<String>> getAllTags(String keyword) {
-        List<String> res = this.blogService.handleGetAllTags(keyword);
+    public ResponseEntity<List<Object[]>> getAllTags(String keyword) {
+        List<Object[]> res = this.blogService.handleGetAllTags(keyword);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }

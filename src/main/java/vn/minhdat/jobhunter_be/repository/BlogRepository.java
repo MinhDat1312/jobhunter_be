@@ -12,10 +12,12 @@ import java.util.List;
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, Long>, JpaSpecificationExecutor<Blog> {
     @Query(value = """
-        SELECT DISTINCT t 
+        SELECT DISTINCT t, COUNT(t) 
         FROM Blog b JOIN b.tags t
-        WHERE (:keyword IS NULL OR LOWER(t) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        WHERE (:keyword IS NULL OR LOWER(t) LIKE LOWER(CONCAT('%', :keyword, '%'))) 
+        GROUP BY t 
+        ORDER BY COUNT(t) DESC
         """
     )
-    List<String> findAllTags(@Param("keyword") String keyword);
+    List<Object[]> findAllTags(@Param("keyword") String keyword);
 }

@@ -153,7 +153,7 @@ public class BlogService {
         return currentUser.getActorNotifications();
     }
 
-    public List<String> handleGetAllTags(String keyword) {
+    public List<Object[]> handleGetAllTags(String keyword) {
         return this.blogRepository.findAllTags(keyword);
     }
 }
