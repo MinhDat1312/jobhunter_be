@@ -106,6 +106,7 @@ public class ApplicationController {
     public ResponseEntity<ResultPaginationResponse> getAllApplicationsByRecruiter(
             @Filter Specification<Application> spec, Pageable pageable) {
         List<Long> jobIds = this.jobService.handleGetAllJobIdsByRecruiter();
+        if(jobIds == null) return null;
 
         Specification<Application> specification = (root, query, cb) ->
                 root.get("job").get("jobId").in(jobIds);
