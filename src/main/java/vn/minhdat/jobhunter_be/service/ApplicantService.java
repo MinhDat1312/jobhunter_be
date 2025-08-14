@@ -15,7 +15,9 @@ import vn.minhdat.jobhunter_be.repository.ApplicantRepository;
 import vn.minhdat.jobhunter_be.repository.ApplicationRepository;
 import vn.minhdat.jobhunter_be.repository.CommentRepository;
 import vn.minhdat.jobhunter_be.repository.NotificationRepository;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,17 +28,19 @@ public class ApplicantService {
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final RoleService roleService;
+    private final EmailService emailService;
     private final String APPLICANT = "APPLICANT";
 
     public ApplicantService(ApplicantRepository applicantRepository, ApplicationRepository applicationRepository,
                             CommentRepository commentRepository, NotificationRepository notificationRepository,
-                            RoleService roleService
+                            RoleService roleService, EmailService emailService
     ) {
         this.applicantRepository = applicantRepository;
         this.applicationRepository = applicationRepository;
         this.commentRepository = commentRepository;
         this.notificationRepository = notificationRepository;
         this.roleService = roleService;
+        this.emailService = emailService;
     }
 
     public Applicant handleCreateApplicant(Applicant applicant) {
@@ -47,6 +51,11 @@ public class ApplicantService {
             role = this.roleService.handleGetRoleByName(APPLICANT);
         }
         applicant.setRole(role);
+        applicant.setVerificationCode(SecurityUtil.generateVerificationCode());
+        applicant.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+        applicant.setEnabled(false);
+        this.emailService.handleSendVerificationEmail(applicant);
+
         return this.applicantRepository.save(applicant);
     }
 

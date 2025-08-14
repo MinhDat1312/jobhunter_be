@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import vn.minhdat.jobhunter_be.entity.Job;
+import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 
 import java.nio.charset.StandardCharsets;
@@ -20,14 +21,12 @@ public class EmailService {
     private final MailSender mailSender;
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
-    private final JobRepository jobRepository;
 
-    public EmailService(MailSender mailSender, JavaMailSender javaMailSender, SpringTemplateEngine templateEngine,
-                        JobRepository jobRepository) {
+    public EmailService(MailSender mailSender, JavaMailSender javaMailSender, SpringTemplateEngine templateEngine
+    ) {
         this.mailSender = mailSender;
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
-        this.jobRepository = jobRepository;
     }
 
 //    Send email with text
@@ -37,8 +36,7 @@ public class EmailService {
         message.setSubject("Hello World");
         message.setText("Hello");
 
-        this.mailSender.send(message);
-    }
+        this.mailSender.send(message);    }
 
 //    Send email with text and html
     public void handleSendEmailSync(String recipient, String subject, String content,
@@ -67,5 +65,14 @@ public class EmailService {
 
         String content = this.templateEngine.process(templateName, context);
         this.handleSendEmailSync(recipient, subject, content, false, true);
+    }
+
+    public void handleSendVerificationEmail(User user) {
+        String subject = "Account Verification";
+        Context context = new Context();
+        context.setVariable("verificationCode", user.getVerificationCode());
+        String content = this.templateEngine.process("verification", context);
+
+        this.handleSendEmailSync(user.getContact().getEmail(), subject, content, false, true);
     }
 }

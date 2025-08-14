@@ -38,7 +38,7 @@ public class ApplicantController {
             throw new InvalidException("Email exists: " + applicant.getContact().getEmail());
         }
 
-        String hashPassword = passwordEncoder.encode(applicant.getPassword());
+        String hashPassword = this.passwordEncoder.encode(applicant.getPassword());
         applicant.setPassword(hashPassword);
 
         Applicant newApplicant = this.applicantService.handleCreateApplicant(applicant);

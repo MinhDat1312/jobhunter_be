@@ -15,6 +15,7 @@ import vn.minhdat.jobhunter_be.util.annotation.RequireAddressIfRecruiter;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -54,6 +55,10 @@ public abstract class User {
     protected String refreshToken;
     protected String username;
     protected String avatar;
+    protected String verificationCode;
+    protected LocalDateTime verificationCodeExpiresAt;
+    protected boolean enabled;
+
 
     protected Instant createdAt;
     protected String createdBy;

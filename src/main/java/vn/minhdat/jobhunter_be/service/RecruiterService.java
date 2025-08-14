@@ -11,7 +11,9 @@ import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.Role;
 import vn.minhdat.jobhunter_be.repository.*;
+import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,10 +25,12 @@ public class RecruiterService {
     private final BlogRepository blogRepository;
     private final NotificationRepository notificationRepository;
     private final RoleService roleService;
+    private final EmailService emailService;
     private final String HR = "HR";
 
     public RecruiterService(RecruiterRepository recruiterRepository, JobRepository jobRepository,
                             CommentRepository commentRepository, RoleService roleService,
+                            EmailService emailService,
                             BlogRepository blogRepository, NotificationRepository notificationRepository
     ) {
         this.recruiterRepository = recruiterRepository;
@@ -35,6 +39,7 @@ public class RecruiterService {
         this.blogRepository = blogRepository;
         this.notificationRepository = notificationRepository;
         this.roleService = roleService;
+        this.emailService = emailService;
     }
 
     public Recruiter handleCreateRecruiter(Recruiter recruiter) {
@@ -45,6 +50,11 @@ public class RecruiterService {
             role = this.roleService.handleGetRoleByName(HR);
         }
         recruiter.setRole(role);
+        recruiter.setVerificationCode(SecurityUtil.generateVerificationCode());
+        recruiter.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+        recruiter.setEnabled(false);
+        this.emailService.handleSendVerificationEmail(recruiter);
+
         return this.recruiterRepository.save(recruiter);
     }
 

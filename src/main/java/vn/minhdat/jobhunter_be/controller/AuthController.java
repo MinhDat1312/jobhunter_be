@@ -15,9 +15,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.common.Role;
 import vn.minhdat.jobhunter_be.dto.request.LoginRequest;
+import vn.minhdat.jobhunter_be.dto.request.VerifyUserRequest;
 import vn.minhdat.jobhunter_be.dto.response.ApplicantResponse;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 import vn.minhdat.jobhunter_be.dto.response.RecruiterResponse;
+import vn.minhdat.jobhunter_be.dto.response.RestResponse;
 import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
@@ -27,6 +29,8 @@ import vn.minhdat.jobhunter_be.service.RecruiterService;
 import vn.minhdat.jobhunter_be.service.UserService;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 import vn.minhdat.jobhunter_be.util.annotation.ApiMessage;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -120,6 +124,26 @@ public class AuthController {
         Recruiter newRecruiter = this.recruiterService.handleCreateRecruiter(recruiter);
         RecruiterResponse recruiterResponse = this.recruiterService.convertToRecruiterResponse(newRecruiter);
         return ResponseEntity.status(HttpStatus.CREATED).body(recruiterResponse);
+    }
+
+    @PostMapping("/auth/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserRequest verifyUser) {
+        try {
+            this.userService.handleVerifyUser(verifyUser);
+            return ResponseEntity.ok(Map.of("message", "Account verified successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/auth/resend")
+    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+        try {
+            this.userService.handleResendCode(email);
+            return ResponseEntity.ok(Map.of("message", "Verification code sent"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/auth/account")

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.common.Role;
 import vn.minhdat.jobhunter_be.dto.request.FollowRecruiterRequest;
 import vn.minhdat.jobhunter_be.dto.request.SaveJobRequest;
+import vn.minhdat.jobhunter_be.dto.request.VerifyUserRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
 import vn.minhdat.jobhunter_be.dto.response.ResultPaginationResponse;
 import vn.minhdat.jobhunter_be.dto.response.UserResponse;
@@ -15,19 +16,19 @@ import vn.minhdat.jobhunter_be.entity.Applicant;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.Recruiter;
 import vn.minhdat.jobhunter_be.entity.User;
+import vn.minhdat.jobhunter_be.exception.InvalidException;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
 import vn.minhdat.jobhunter_be.repository.RecruiterRepository;
 import vn.minhdat.jobhunter_be.repository.UserRepository;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final RecruiterRepository recruiterRepository;
@@ -36,13 +37,15 @@ public class UserService {
 
     public UserService(UserRepository userRepository, JobRepository jobRepository,
                        RecruiterRepository recruiterRepository,
-                       PasswordEncoder passwordEncoder, SecurityUtil securityUtil
+                       PasswordEncoder passwordEncoder, SecurityUtil securityUtil,
+                       EmailService emailService
     ) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.recruiterRepository = recruiterRepository;
         this.passwordEncoder = passwordEncoder;
         this.securityUtil = securityUtil;
+        this.emailService = emailService;
     }
 
     public User handleGetUserByEmail(String email) {
@@ -161,6 +164,41 @@ public class UserService {
 
         return null;
     }
+
+    public void handleVerifyUser(VerifyUserRequest verifyUser) throws InvalidException {
+        User user = this.handleGetUserByEmail(verifyUser.getEmail());
+        if (user != null) {
+            if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+                throw new InvalidException("Verification code has expired");
+            }
+            if (user.getVerificationCode().equals(verifyUser.getVerificationCode())) {
+                user.setEnabled(true);
+                user.setVerificationCode(null);
+                user.setVerificationCodeExpiresAt(null);
+                this.userRepository.save(user);
+            } else {
+                throw new InvalidException("Invalid verification code");
+            }
+        } else {
+            throw new InvalidException("User not found");
+        }
+    }
+
+    public void handleResendCode(String email) throws InvalidException {
+        User user = this.handleGetUserByEmail(email);
+        if (user != null) {
+            if (user.isEnabled()) {
+                throw new InvalidException("Account is already verified");
+            }
+            user.setVerificationCode(SecurityUtil.generateVerificationCode());
+            user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+            this.emailService.handleSendVerificationEmail(user);
+            this.userRepository.save(user);
+        } else {
+            throw new InvalidException("User not found");
+        }
+    }
+
 
     public UserResponse convertToUserResponse(User user) {
         UserResponse userResponse = new UserResponse();

@@ -39,6 +39,11 @@ dependencies {
 	// https://mvnrepository.com/artifact/commons-io/commons-io
 	implementation("commons-io:commons-io:2.19.0")
 
+	// https://mvnrepository.com/artifact/commons-net/commons-net
+	implementation("commons-net:commons-net:3.12.0")
+	// https://mvnrepository.com/artifact/dnsjava/dnsjava
+	implementation("dnsjava:dnsjava:3.6.3")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
