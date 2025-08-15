@@ -11,6 +11,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.minhdat.jobhunter_be.dto.request.FollowRecruiterRequest;
+import vn.minhdat.jobhunter_be.dto.request.ResetPasswordRequest;
 import vn.minhdat.jobhunter_be.dto.request.SaveJobRequest;
 import vn.minhdat.jobhunter_be.dto.request.UpdatePasswordRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
@@ -74,6 +75,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body((LoginResponse) result.get("loginResponse"));
+    }
+
+    @PutMapping("/users/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest)
+            throws InvalidException {
+        try {
+            this.userService.handleResetPassword(resetPasswordRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    Map.of("message", "Reset password successful")
+            );
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/users/saved-jobs")

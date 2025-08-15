@@ -12,6 +12,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import vn.minhdat.jobhunter_be.entity.Job;
 import vn.minhdat.jobhunter_be.entity.User;
 import vn.minhdat.jobhunter_be.repository.JobRepository;
+import vn.minhdat.jobhunter_be.repository.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -21,12 +22,15 @@ public class EmailService {
     private final MailSender mailSender;
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
+    private final UserRepository userRepository;
 
-    public EmailService(MailSender mailSender, JavaMailSender javaMailSender, SpringTemplateEngine templateEngine
+    public EmailService(MailSender mailSender, JavaMailSender javaMailSender,
+                        SpringTemplateEngine templateEngine, UserRepository userRepository
     ) {
         this.mailSender = mailSender;
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
+        this.userRepository = userRepository;
     }
 
 //    Send email with text

@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.minhdat.jobhunter_be.common.Role;
 import vn.minhdat.jobhunter_be.dto.request.FollowRecruiterRequest;
+import vn.minhdat.jobhunter_be.dto.request.ResetPasswordRequest;
 import vn.minhdat.jobhunter_be.dto.request.SaveJobRequest;
 import vn.minhdat.jobhunter_be.dto.request.VerifyUserRequest;
 import vn.minhdat.jobhunter_be.dto.response.LoginResponse;
@@ -134,6 +135,17 @@ public class UserService {
         return null;
     }
 
+    public void handleResetPassword(ResetPasswordRequest resetPasswordRequest) throws InvalidException {
+        User user = this.handleGetUserByEmail(resetPasswordRequest.getEmail());
+        if(user != null) {
+            String hashedPassword = this.passwordEncoder.encode(resetPasswordRequest.getNewPassword());
+            user.setPassword(hashedPassword);
+            this.userRepository.save(user);
+        } else {
+            throw new InvalidException("User not found");
+        }
+    }
+
     public UserResponse handleSaveJobs(SaveJobRequest saveJobRequest) {
         User user = this.userRepository.findById(saveJobRequest.getUserId()).orElse(null);
 
@@ -187,9 +199,6 @@ public class UserService {
     public void handleResendCode(String email) throws InvalidException {
         User user = this.handleGetUserByEmail(email);
         if (user != null) {
-            if (user.isEnabled()) {
-                throw new InvalidException("Account is already verified");
-            }
             user.setVerificationCode(SecurityUtil.generateVerificationCode());
             user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
             this.emailService.handleSendVerificationEmail(user);
@@ -198,7 +207,6 @@ public class UserService {
             throw new InvalidException("User not found");
         }
     }
-
 
     public UserResponse convertToUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
