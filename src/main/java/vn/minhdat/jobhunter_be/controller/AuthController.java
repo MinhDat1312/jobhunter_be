@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
@@ -68,14 +68,22 @@ public class AuthController {
         LoginResponse loginResponse = new LoginResponse();
         User currentUser = this.userService.handleGetUserByEmail(loginRequest.getEmail());
         if (currentUser != null) {
-            LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
-                    currentUser.getUserId(), currentUser.getContact().getEmail(),
-                    currentUser.getFullName(), currentUser.getUsername(), currentUser.getAvatar(),
-                    currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
-                    currentUser.getRole(), currentUser.getSavedJobs(), currentUser.getFollowedRecruiters(),
-                    currentUser.getActorNotifications()
-            );
-            loginResponse.setUser(userLogin);
+            if(currentUser.isEnabled()) {
+                LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
+                        currentUser.getUserId(), currentUser.getContact().getEmail(),
+                        currentUser.getFullName(), currentUser.getUsername(), currentUser.getAvatar(),
+                        currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
+                        currentUser.getRole(), currentUser.getSavedJobs(), currentUser.getFollowedRecruiters(),
+                        currentUser.getActorNotifications()
+                );
+                loginResponse.setUser(userLogin);
+            } else {
+                return ResponseEntity.badRequest().body(
+                        Map.of(
+                                "message", "Account is locked"
+                        )
+                );
+            }
         }
         String accessToken = this.securityUtil.createAccessToken(loginRequest.getEmail(), loginResponse);
         loginResponse.setAccessToken(accessToken);
