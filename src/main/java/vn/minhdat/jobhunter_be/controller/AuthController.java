@@ -73,6 +73,7 @@ public class AuthController {
                         currentUser.getUserId(), currentUser.getContact().getEmail(),
                         currentUser.getFullName(), currentUser.getUsername(), currentUser.getAvatar(),
                         currentUser instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
+                        true,
                         currentUser.getRole(), currentUser.getSavedJobs(), currentUser.getFollowedRecruiters(),
                         currentUser.getActorNotifications()
                 );
@@ -198,6 +199,9 @@ public class AuthController {
         User currentUser = this.userService.handleGetUserByRefreshTokenAndEmail(refreshToken, email);
         if(currentUser == null){
             throw new InvalidException("User not found");
+        }
+        if(!currentUser.isEnabled()) {
+            throw new InvalidException("Account is locked");
         }
 
         LoginResponse loginResponse = new LoginResponse();

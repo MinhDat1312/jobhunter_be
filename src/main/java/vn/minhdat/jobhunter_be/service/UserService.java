@@ -116,6 +116,7 @@ public class UserService {
                     res.getUserId(), res.getContact().getEmail(),
                     res.getFullName(), res.getUsername(), res.getAvatar(),
                     res instanceof Applicant ? Role.APPLICANT.getValue() : Role.RECRUITER.getValue(),
+                    res.isEnabled(),
                     res.getRole(), res.getSavedJobs(), res.getFollowedRecruiters(),
                     res.getActorNotifications()
             );

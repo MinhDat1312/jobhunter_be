@@ -27,6 +27,7 @@ public class UserResponse {
     private String avatar;
     private Gender gender;
     private LocalDate dob;
+    private boolean enabled;
     private RoleUser role;
     private List<SavedJob> savedJobs;
     private List<FollowedRecruiter> followedRecruiters;

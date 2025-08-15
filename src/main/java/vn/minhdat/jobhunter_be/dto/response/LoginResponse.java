@@ -32,6 +32,7 @@ public class LoginResponse {
         private String username;
         private String avatar;
         private String type;
+        private boolean enabled;
         private Role role;
         private List<Job> savedJobs;
         private List<Recruiter> followedRecruiters;

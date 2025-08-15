@@ -95,6 +95,7 @@ public class ApplicantService {
             currentApplicant.setLevel(applicant.getLevel());
             currentApplicant.setResumeUrl(applicant.getResumeUrl());
             currentApplicant.setAvatar(applicant.getAvatar());
+            currentApplicant.setEnabled(applicant.isEnabled());
 
             if(applicant.getRole() != null){
                 Role role = this.roleService.handleGetRoleById(applicant.getRole().getRoleId());
@@ -148,6 +149,7 @@ public class ApplicantService {
         applicantResponse.setDob(applicant.getDob());
         applicantResponse.setAvailableStatus(applicant.isAvailableStatus());
         applicantResponse.setAvatar(applicant.getAvatar());
+        applicantResponse.setEnabled(applicant.isEnabled());
 
         if(applicant.getRole() != null) {
             UserResponse.RoleUser roleUser = new UserResponse.RoleUser();

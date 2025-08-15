@@ -101,6 +101,7 @@ public class RecruiterService {
             currentRecruiter.setDescription(updateRecruiter.getDescription());
             currentRecruiter.setAvatar(updateRecruiter.getAvatar());
             currentRecruiter.setWebsite(updateRecruiter.getWebsite());
+            currentRecruiter.setEnabled(updateRecruiter.isEnabled());
 
             if(updateRecruiter.getRole() != null) {
                 Role role = this.roleService.handleGetRoleById(updateRecruiter.getRole().getRoleId());
@@ -152,6 +153,7 @@ public class RecruiterService {
         recruiterResponse.setDescription(recruiter.getDescription());
         recruiterResponse.setWebsite(recruiter.getWebsite());
         recruiterResponse.setAvatar(recruiter.getAvatar());
+        recruiterResponse.setEnabled(recruiter.isEnabled());
 
         if(recruiter.getRole() != null) {
             UserResponse.RoleUser roleUser = new UserResponse.RoleUser();
