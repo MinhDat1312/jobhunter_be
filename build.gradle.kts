@@ -27,12 +27,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
-	implementation("com.turkraft.springfilter:jpa:3.1.7")
+	implementation("com.turkraft.springfilter:jpa:3.2.1")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("mysql:mysql-connector-java:8.0.33")
 
 	// https://mvnrepository.com/artifact/com.cloudinary/cloudinary-http44
 	implementation ("com.cloudinary:cloudinary-http44:1.39.0")

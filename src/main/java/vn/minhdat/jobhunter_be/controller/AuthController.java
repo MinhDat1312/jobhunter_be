@@ -47,7 +47,8 @@ public class AuthController {
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
                           UserService userService, PasswordEncoder passwordEncoder,
-                          ApplicantService applicantService, RecruiterService recruiterService) {
+                          ApplicantService applicantService, RecruiterService recruiterService
+    ) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
