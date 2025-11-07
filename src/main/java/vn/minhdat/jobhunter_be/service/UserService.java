@@ -104,8 +104,7 @@ public class UserService {
                     res.getActorNotifications()
             );
             loginResponse.setUser(userLogin);
-            String accessToken = this.securityUtil.createAccessToken(currentEmail, loginResponse);
-            loginResponse.setAccessToken(accessToken);
+            String newAccessToken = this.securityUtil.createAccessToken(currentEmail, loginResponse);
             String newRefreshToken = this.securityUtil.createRefreshToken(currentEmail, loginResponse);
             this.redisService.replaceToken(
                 refreshToken, newRefreshToken,
@@ -116,6 +115,7 @@ public class UserService {
             Map<String, Object> response = new HashMap<>();
             response.put("loginResponse", loginResponse);
             response.put("refreshToken", newRefreshToken);
+            response.put("accessToken", newAccessToken);
 
             return response;
         }

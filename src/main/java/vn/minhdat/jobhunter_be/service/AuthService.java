@@ -81,7 +81,6 @@ public class AuthService {
 
         String accessToken = this.securityUtil.createAccessToken(currentUser.getContact().getEmail(), loginResponse);
         String refreshToken = this.securityUtil.createRefreshToken(currentUser.getContact().getEmail(), loginResponse);
-        loginResponse.setAccessToken(accessToken);
 
         this.redisService.setTokenWithTTL(
                 "refresh:" + refreshToken,
@@ -146,7 +145,6 @@ public class AuthService {
 
         String newAccessToken = this.securityUtil.createAccessToken(email, loginResponse);
         String newRefreshToken = this.securityUtil.createAccessToken(email, loginResponse);
-        loginResponse.setAccessToken(newAccessToken);
 
         this.redisService.replaceToken(
                 refreshToken, newRefreshToken,

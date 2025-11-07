@@ -67,7 +67,15 @@ public class UserController {
         if(result == null) {
             throw new InvalidException("Updated password is failed");
         }
-        ResponseCookie cookie = ResponseCookie
+
+        ResponseCookie accessTokenCookie = ResponseCookie
+                .from("accessToken", result.get("accessToken").toString())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(jwtRefreshToken)
+                .build();
+        ResponseCookie refreshTokenCookie = ResponseCookie
                 .from("refreshToken", result.get("refreshToken").toString())
                 .httpOnly(true)
                 .secure(true)
@@ -75,8 +83,9 @@ public class UserController {
                 .maxAge(jwtRefreshToken)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body((LoginResponse) result.get("loginResponse"));
     }
 
