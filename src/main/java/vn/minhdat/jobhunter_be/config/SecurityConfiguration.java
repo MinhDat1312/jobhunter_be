@@ -80,11 +80,6 @@ public class SecurityConfiguration {
     @Bean
     public BearerTokenResolver bearerTokenResolver() {
         return request -> {
-            String authorization = request.getHeader("Authorization");
-            if (authorization != null && authorization.startsWith("Bearer ")) {
-                return authorization.substring(7);
-            }
-
             if (request.getCookies() != null) {
                 return Arrays.stream(request.getCookies())
                         .filter(cookie -> "accessToken".equals(cookie.getName()))
