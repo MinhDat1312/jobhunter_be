@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import vn.minhdat.jobhunter_be.util.SecurityUtil;
@@ -75,7 +76,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                       AuthenticationEntryPointCustom authenticationEntryPointCustom) throws Exception {
+                       AuthenticationEntryPointCustom authenticationEntryPointCustom,
+                       RedisTokenBlacklistFilter redisTokenBlacklistFilter
+    ) throws Exception {
         String[] whiteList = {
                 "/", "/api/v1/auth/login", "/api/v1/auth/register/**", "/api/v1/auth/refresh",
                 "/api/v1/auth/verify", "/api/v1/auth/resend",
@@ -103,6 +106,7 @@ public class SecurityConfiguration {
                     o.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPointCustom)
             )
+            .addFilterBefore(redisTokenBlacklistFilter, BearerTokenAuthenticationFilter.class)
             .exceptionHandling(e ->
                     e.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                             .accessDeniedHandler(new BearerTokenAccessDeniedHandler())

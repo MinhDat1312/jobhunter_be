@@ -53,14 +53,17 @@ public class UserController {
     }
 
     @PutMapping("/users/update-password")
-    public ResponseEntity<LoginResponse> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest)
-            throws InvalidException {
+    public ResponseEntity<LoginResponse> updatePassword(
+            @CookieValue(name = "refreshToken", defaultValue = "missingValue") String refreshToken,
+            @Valid @RequestBody UpdatePasswordRequest updatePasswordRequest
+    ) throws InvalidException {
         boolean checked = this.userService.handleCheckCurrentPassword(updatePasswordRequest.getCurrentPassword());
         if(!checked) {
             throw new InvalidException("Current password is error");
         }
 
-        Map<String, Object> result = this.userService.handleUpdatePassword(updatePasswordRequest.getNewPassword());
+        Map<String, Object> result = this.userService
+                .handleUpdatePassword(updatePasswordRequest.getNewPassword(), refreshToken);
         if(result == null) {
             throw new InvalidException("Updated password is failed");
         }

@@ -1,5 +1,7 @@
 package vn.minhdat.jobhunter_be.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,29 +27,21 @@ import vn.minhdat.jobhunter_be.util.SecurityUtil;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    private final EmailService emailService;
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final RecruiterRepository recruiterRepository;
+    private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityUtil securityUtil;
 
-    public UserService(UserRepository userRepository, JobRepository jobRepository,
-                       RecruiterRepository recruiterRepository,
-                       PasswordEncoder passwordEncoder, SecurityUtil securityUtil,
-                       EmailService emailService
-    ) {
-        this.userRepository = userRepository;
-        this.jobRepository = jobRepository;
-        this.recruiterRepository = recruiterRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.securityUtil = securityUtil;
-        this.emailService = emailService;
-    }
+    @Value("${minhdat.jwt.refresh-token-validity-in-seconds}")
+    private long jwtRefreshToken;
 
     public User handleGetUserByEmail(String email) {
         return this.userRepository.findByContact_Email(email);
@@ -61,17 +55,6 @@ public class UserService {
         return this.userRepository.findById(id).orElse(null);
     }
 
-    public void handleUpdateRefreshToken(String email, String refreshToken) {
-        User user = this.userRepository.findByContact_Email(email);
-        if (user != null) {
-            user.setRefreshToken(refreshToken);
-            this.userRepository.save(user);
-        }
-    }
-
-    public User handleGetUserByRefreshTokenAndEmail(String refreshToken, String email) {
-        return this.userRepository.findByRefreshTokenAndContact_Email(refreshToken, email);
-    }
 
     public ResultPaginationResponse handleGetAllUsers (Specification<User> spec, Pageable pageable) {
         Page<User> page = this.userRepository.findAll(spec, pageable);
@@ -101,7 +84,7 @@ public class UserService {
         return false;
     }
 
-    public Map<String, Object> handleUpdatePassword(String newPassword){
+    public Map<String, Object> handleUpdatePassword(String newPassword, String refreshToken) {
         String currentEmail = SecurityUtil.getCurrentUserLogin().isPresent() ?
                 SecurityUtil.getCurrentUserLogin().get() : "";
 
@@ -123,12 +106,16 @@ public class UserService {
             loginResponse.setUser(userLogin);
             String accessToken = this.securityUtil.createAccessToken(currentEmail, loginResponse);
             loginResponse.setAccessToken(accessToken);
-            String refreshToken = this.securityUtil.createRefreshToken(currentEmail, loginResponse);
-            this.handleUpdateRefreshToken(currentEmail, refreshToken);
+            String newRefreshToken = this.securityUtil.createRefreshToken(currentEmail, loginResponse);
+            this.redisService.replaceToken(
+                refreshToken, newRefreshToken,
+                currentEmail, jwtRefreshToken, TimeUnit.SECONDS
+
+            );
 
             Map<String, Object> response = new HashMap<>();
             response.put("loginResponse", loginResponse);
-            response.put("refreshToken", refreshToken);
+            response.put("refreshToken", newRefreshToken);
 
             return response;
         }
@@ -176,37 +163,6 @@ public class UserService {
         }
 
         return null;
-    }
-
-    public void handleVerifyUser(VerifyUserRequest verifyUser) throws InvalidException {
-        User user = this.handleGetUserByEmail(verifyUser.getEmail());
-        if (user != null) {
-            if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-                throw new InvalidException("Verification code has expired");
-            }
-            if (user.getVerificationCode().equals(verifyUser.getVerificationCode())) {
-                user.setEnabled(true);
-                user.setVerificationCode(null);
-                user.setVerificationCodeExpiresAt(null);
-                this.userRepository.save(user);
-            } else {
-                throw new InvalidException("Invalid verification code");
-            }
-        } else {
-            throw new InvalidException("User not found");
-        }
-    }
-
-    public void handleResendCode(String email) throws InvalidException {
-        User user = this.handleGetUserByEmail(email);
-        if (user != null) {
-            user.setVerificationCode(SecurityUtil.generateVerificationCode());
-            user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
-            this.emailService.handleSendVerificationEmail(user);
-            this.userRepository.save(user);
-        } else {
-            throw new InvalidException("User not found");
-        }
     }
 
     public UserResponse convertToUserResponse(User user) {

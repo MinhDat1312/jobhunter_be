@@ -9,5 +9,5 @@ import vn.minhdat.jobhunter_be.entity.User;
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     User findByContact_Email(String email);
     boolean existsByContact_Email(String email);
-    User findByRefreshTokenAndContact_Email(String refreshToken, String email);
+//    User findByRefreshTokenAndContact_Email(String refreshToken, String email);
 }
